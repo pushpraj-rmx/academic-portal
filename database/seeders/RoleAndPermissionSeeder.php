@@ -31,10 +31,12 @@ class RoleAndPermissionSeeder extends Seeder
                 'course.view', 'course.create', 'course.update', 'course.delete',
                 'specialization.view', 'specialization.create', 'specialization.update', 'specialization.delete',
                 'syllabus.view', 'syllabus.create', 'syllabus.update', 'syllabus.delete',
+                'subject.view', 'subject.create', 'subject.update', 'subject.delete',
             ],
             'Examination' => [
                 'exam-session.view', 'exam-session.create', 'exam-session.update', 'exam-session.delete',
-                'result.view', 'result.create', 'result.update', 'result.publish',
+                'exam-form.view', 'exam-form.create', 'exam-form.update', 'exam-form.delete',
+                'subject-mark.view', 'subject-mark.create', 'subject-mark.update',
             ],
             'Placement' => [
                 'recruiter.view', 'recruiter.create', 'recruiter.update', 'recruiter.delete',
@@ -70,6 +72,7 @@ class RoleAndPermissionSeeder extends Seeder
             'course.view', 'course.create', 'course.update', 'course.delete',
             'specialization.view', 'specialization.create', 'specialization.update', 'specialization.delete',
             'syllabus.view', 'syllabus.create', 'syllabus.update', 'syllabus.delete',
+            'subject.view', 'subject.create', 'subject.update', 'subject.delete',
             'student.view', 'student.create', 'student.update', 'student.delete', 'student.verify',
             'student-document.view', 'student-document.create', 'student-document.delete',
             'page.view', 'announcement.view', 'announcement.create', 'announcement.update', 'announcement.delete',
@@ -78,7 +81,8 @@ class RoleAndPermissionSeeder extends Seeder
         $examinationCell = Role::findByName(UserRole::ExaminationCell->value, $guardName);
         $examinationCell->syncPermissions([
             'exam-session.view', 'exam-session.create', 'exam-session.update', 'exam-session.delete',
-            'result.view', 'result.create', 'result.update', 'result.publish',
+            'exam-form.view', 'exam-form.create', 'exam-form.update', 'exam-form.delete',
+            'subject-mark.view', 'subject-mark.create', 'subject-mark.update',
             'student.view', 'student.verify',
         ]);
 

@@ -64,4 +64,9 @@ class Course extends Model
     {
         return $this->hasMany(Syllabus::class);
     }
+
+    public function subjects(): HasMany
+    {
+        return $this->hasMany(Subject::class);
+    }
 }

@@ -62,4 +62,14 @@ class Student extends Model
     {
         return $this->hasMany(StudentDocument::class);
     }
+
+    public function examForms(): HasMany
+    {
+        return $this->hasMany(ExamForm::class);
+    }
+
+    public function subjectMarks(): HasMany
+    {
+        return $this->hasMany(SubjectMark::class);
+    }
 }

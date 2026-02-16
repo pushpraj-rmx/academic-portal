@@ -9,6 +9,7 @@
                 <a href="{{ route('pages.show', ['page' => 'about']) }}" class="text-gray-600 hover:text-gray-900 font-medium">About</a>
                 <a href="{{ route('academic.index') }}" class="text-gray-600 hover:text-gray-900 font-medium">Courses</a>
                 <a href="{{ route('notices.index') }}" class="text-gray-600 hover:text-gray-900 font-medium">Notices</a>
+                <a href="{{ route('results.index') }}" class="text-gray-600 hover:text-gray-900 font-medium">Results</a>
                 @auth
                     <a href="{{ url('/dashboard') }}" class="text-gray-600 hover:text-gray-900 font-medium">Dashboard</a>
                     @if(auth()->user()->can('page.view'))

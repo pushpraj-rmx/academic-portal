@@ -4,6 +4,7 @@ use App\Http\Controllers\AcademicController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -15,6 +16,9 @@ Route::get('/academic', [AcademicController::class, 'index'])->name('academic.in
 Route::get('/academic/category/{course_category:slug}', [AcademicController::class, 'categoryShow'])->name('academic.category.show');
 Route::get('/academic/courses/{course:slug}', [AcademicController::class, 'courseShow'])->name('academic.course.show');
 Route::get('/academic/syllabus/{syllabus}', [AcademicController::class, 'syllabusDownload'])->name('academic.syllabus.download');
+
+Route::get('/results', [ResultController::class, 'index'])->name('results.index');
+Route::get('/results/search', [ResultController::class, 'search'])->name('results.search');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
