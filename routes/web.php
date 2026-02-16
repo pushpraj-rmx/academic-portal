@@ -3,6 +3,7 @@
 use App\Http\Controllers\AcademicController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,9 @@ Route::get('/academic/syllabus/{syllabus}', [AcademicController::class, 'syllabu
 
 Route::get('/results', [ResultController::class, 'index'])->name('results.index');
 Route::get('/results/search', [ResultController::class, 'search'])->name('results.search');
+
+Route::get('/placements/recruiters', [PlacementController::class, 'recruiters'])->name('placements.recruiters');
+Route::get('/placements/statistics', [PlacementController::class, 'statistics'])->name('placements.statistics');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

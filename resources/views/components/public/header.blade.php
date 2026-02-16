@@ -10,6 +10,7 @@
                 <a href="{{ route('academic.index') }}" class="text-gray-600 hover:text-gray-900 font-medium">Courses</a>
                 <a href="{{ route('notices.index') }}" class="text-gray-600 hover:text-gray-900 font-medium">Notices</a>
                 <a href="{{ route('results.index') }}" class="text-gray-600 hover:text-gray-900 font-medium">Results</a>
+                <a href="{{ route('placements.recruiters') }}" class="text-gray-600 hover:text-gray-900 font-medium">Placements</a>
                 @auth
                     <a href="{{ url('/dashboard') }}" class="text-gray-600 hover:text-gray-900 font-medium">Dashboard</a>
                     @if(auth()->user()->can('page.view'))

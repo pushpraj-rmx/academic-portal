@@ -72,4 +72,9 @@ class Student extends Model
     {
         return $this->hasMany(SubjectMark::class);
     }
+
+    public function placements(): HasMany
+    {
+        return $this->hasMany(Placement::class);
+    }
 }

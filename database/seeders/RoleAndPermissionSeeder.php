@@ -40,7 +40,7 @@ class RoleAndPermissionSeeder extends Seeder
             ],
             'Placement' => [
                 'recruiter.view', 'recruiter.create', 'recruiter.update', 'recruiter.delete',
-                'placement.view', 'placement.create', 'placement.update',
+                'placement.view', 'placement.create', 'placement.update', 'placement.delete',
             ],
             'Student' => [
                 'student.view', 'student.create', 'student.update', 'student.delete', 'student.verify',
@@ -89,7 +89,7 @@ class RoleAndPermissionSeeder extends Seeder
         $placementCell = Role::findByName(UserRole::PlacementCell->value, $guardName);
         $placementCell->syncPermissions([
             'recruiter.view', 'recruiter.create', 'recruiter.update', 'recruiter.delete',
-            'placement.view', 'placement.create', 'placement.update',
+            'placement.view', 'placement.create', 'placement.update', 'placement.delete',
         ]);
 
         $contentManager = Role::findByName(UserRole::ContentManager->value, $guardName);
