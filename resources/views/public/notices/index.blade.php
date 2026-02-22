@@ -4,10 +4,10 @@
 
 @section('content')
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Notices & Announcements</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">{{ settings('section_notices_announcements', 'Notices & Announcements') }}</h1>
 
         @if($announcements->isEmpty())
-            <p class="text-gray-600">No announcements at the moment.</p>
+            <p class="text-gray-600">{{ settings('empty_notices', 'No announcements at the moment.') }}</p>
         @else
             <ul class="space-y-6">
                 @foreach($announcements as $announcement)
@@ -21,7 +21,7 @@
                                 <p class="text-gray-600 mt-2 line-clamp-2">{{ Str::limit(strip_tags($announcement->body), 120) }}</p>
                             @endif
                             @if($announcement->attachment)
-                                <span class="inline-block mt-2 text-sm text-amber-600 font-medium">PDF attached</span>
+                                <span class="inline-block mt-2 text-sm text-amber-600 font-medium">{{ __('public.pdf_attached') }}</span>
                             @endif
                         </a>
                     </li>

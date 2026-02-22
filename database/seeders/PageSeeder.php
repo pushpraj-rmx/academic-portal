@@ -42,6 +42,14 @@ class PageSeeder extends Seeder
                 'is_published' => true,
                 'sort_order' => 3,
             ],
+            [
+                'title' => 'Notices',
+                'slug' => 'notices',
+                'body' => '<p>Latest announcements, notices, and updates from the institute.</p>',
+                'meta_description' => 'Latest announcements and notices.',
+                'is_published' => true,
+                'sort_order' => 4,
+            ],
         ];
 
         foreach ($pages as $data) {

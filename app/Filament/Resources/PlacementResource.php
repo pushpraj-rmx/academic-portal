@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Placement;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -43,7 +44,23 @@ class PlacementResource extends Resource
                 Forms\Components\TextInput::make('academic_year')
                     ->required()
                     ->maxLength(255)
-                    ->placeholder('e.g. 2025-2026'),
+                    ->placeholder('e.g. 2025-2026')
+                    ->rules([
+                        function (Get $get, $livewire): \Closure {
+                            return function (string $attribute, mixed $value, \Closure $fail): void {
+                                $query = Placement::query()
+                                    ->where('student_id', $get('student_id'))
+                                    ->where('recruiter_id', $get('recruiter_id'))
+                                    ->where('academic_year', $value);
+                                if (isset($livewire->record)) {
+                                    $query->whereKeyNot($livewire->record->getKey());
+                                }
+                                if ($query->exists()) {
+                                    $fail(__('A placement for this student, recruiter and academic year already exists.'));
+                                }
+                            };
+                        },
+                    ]),
                 Forms\Components\Select::make('placement_type')
                     ->options([
                         'job' => 'Job',

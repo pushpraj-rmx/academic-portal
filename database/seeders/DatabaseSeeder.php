@@ -19,13 +19,14 @@ class DatabaseSeeder extends Seeder
             RoleAndPermissionSeeder::class,
             SuperAdminSeeder::class,
             PageSeeder::class,
+            SiteSettingSeeder::class,
             AnnouncementSeeder::class,
             CourseCategorySeeder::class,
         ]);
 
-        User::factory()->firstOrCreate(
+        User::firstOrCreate(
             ['email' => 'test@example.com'],
-            ['name' => 'Test User']
+            ['name' => 'Test User', 'password' => bcrypt('password')]
         );
     }
 }

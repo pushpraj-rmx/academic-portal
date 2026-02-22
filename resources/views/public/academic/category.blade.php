@@ -5,7 +5,7 @@
 @section('content')
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <p class="mb-4">
-            <a href="{{ route('academic.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">&larr; Back to Courses</a>
+            <a href="{{ route('academic.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">&larr; {{ settings('back_to_courses', 'Back to Courses') }}</a>
         </p>
         <header class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900">{{ $category->name }}</h1>
@@ -15,7 +15,7 @@
         </header>
 
         @if($courses->isEmpty())
-            <p class="text-gray-600">No courses in this category at the moment.</p>
+            <p class="text-gray-600">{{ settings('empty_courses_in_category', 'No courses in this category at the moment.') }}</p>
         @else
             <ul class="space-y-6">
                 @foreach($courses as $course)
@@ -26,7 +26,7 @@
                                 <p class="text-sm text-gray-500 mt-1">
                                     @if($course->duration) {{ $course->duration }} @endif
                                     @if($course->duration && $course->intake) &middot; @endif
-                                    @if($course->intake) Intake: {{ $course->intake }} @endif
+                                    @if($course->intake) {{ __('public.intake') }}: {{ $course->intake }} @endif
                                 </p>
                             @endif
                             @if($course->description)

@@ -29,6 +29,7 @@ class Course extends Model
     {
         return [
             'is_active' => 'boolean',
+            'intake' => 'integer',
         ];
     }
 
