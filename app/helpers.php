@@ -20,3 +20,19 @@ if (! function_exists('settings')) {
         return $value;
     }
 }
+
+if (! function_exists('settings_array')) {
+    /**
+     * Get a site setting value as an array (e.g. JSON-stored footer_emails).
+     *
+     * @return array<int, mixed>
+     */
+    function settings_array(string $key): array
+    {
+        $value = settings($key, '[]');
+
+        $decoded = is_string($value) ? json_decode($value, true) : $value;
+
+        return is_array($decoded) ? $decoded : [];
+    }
+}

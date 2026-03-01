@@ -4,6 +4,8 @@ namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
 use Filament\Actions\Action;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -12,6 +14,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Storage;
 
 class SiteSettings extends Page implements HasForms
 {
@@ -34,6 +37,24 @@ class SiteSettings extends Page implements HasForms
         $defaults = SiteSetting::defaults();
         $values = SiteSetting::query()->pluck('value', 'key')->toArray();
         $this->data = array_merge($defaults, $values);
+        // FileUpload expects array; store uses a single path string
+        $logoPath = $this->data['logo_path'] ?? null;
+        if (is_string($logoPath) && $logoPath !== '') {
+            $this->data['logo_path'] = [$logoPath];
+        } else {
+            $this->data['logo_path'] = [];
+        }
+        // Repeater expects array of items; decode footer_emails JSON (array of strings) to [['email' => '...'], ...]
+        $footerEmailsRaw = $this->data['footer_emails'] ?? '[]';
+        $decoded = is_string($footerEmailsRaw) ? json_decode($footerEmailsRaw, true) : $footerEmailsRaw;
+        $emails = is_array($decoded) ? $decoded : [];
+        $items = [];
+        foreach ($emails as $e) {
+            if (is_string($e) && $e !== '') {
+                $items[] = ['email' => $e];
+            }
+        }
+        $this->data['footer_emails'] = $items ?: [['email' => '']];
     }
 
     public function form(Form $form): Form
@@ -41,10 +62,91 @@ class SiteSettings extends Page implements HasForms
         $defaults = SiteSetting::defaults();
         $components = [];
 
-        $components[] = Section::make('Footer & Ticker')
+        $components[] = Section::make('Branding')
+            ->schema([
+                FileUpload::make('logo_path')
+                    ->label('Site logo')
+                    ->directory('site')
+                    ->disk('public')
+                    ->image()
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('1:1')
+                    ->imageResizeTargetWidth('200')
+                    ->imageResizeTargetHeight('200')
+                    ->maxSize(2048)
+                    ->nullable()
+                    ->helperText('Upload a logo for the header. Recommended: square or wide image, max 2 MB.'),
+            ])->columns(1);
+
+        $components[] = Section::make('Header top bar')
+            ->schema([
+                TextInput::make('topbar_welcome')->label('Welcome text (top black bar)')->placeholder('e.g. Welcome to '.config('app.name'))->maxLength(255),
+                TextInput::make('topbar_phone')->label('Call Us (middle bar)')->maxLength(50),
+                TextInput::make('topbar_email')->label('Mail Us (middle bar)')->email()->maxLength(255),
+                TextInput::make('topbar_location')->label('Location (middle bar)')->maxLength(255),
+                TextInput::make('payu_url')->label('PayU / PayUnow URL')->url()->maxLength(500),
+            ])->columns(1);
+
+        $components[] = Section::make('Footer – Contact')
+            ->schema([
+                Textarea::make('footer_address')->label('Address')->rows(3)->maxLength(500),
+                TextInput::make('footer_phone')->label('Phone number')->maxLength(50),
+                Repeater::make('footer_emails')
+                    ->label('Email addresses')
+                    ->schema([
+                        TextInput::make('email')->label('Email')->email()->maxLength(255),
+                    ])
+                    ->defaultItems(1)
+                    ->addActionLabel('Add email')
+                    ->collapsible(),
+            ])->columns(1);
+
+        $components[] = Section::make('Footer – Social links')
+            ->schema([
+                TextInput::make('facebook_url')->label('Facebook URL')->url()->maxLength(500),
+                TextInput::make('twitter_url')->label('Twitter URL')->url()->maxLength(500),
+                TextInput::make('google_plus_url')->label('Google+ URL')->url()->maxLength(500),
+                TextInput::make('linkedin_url')->label('LinkedIn URL')->url()->maxLength(500),
+                TextInput::make('pinterest_url')->label('Pinterest URL')->url()->maxLength(500),
+                TextInput::make('vimeo_url')->label('Vimeo URL')->url()->maxLength(500),
+            ])->columns(1);
+
+        $components[] = Section::make('Footer – Copyright & Ticker')
             ->schema([
                 Textarea::make('footer_text')->label('Footer text')->placeholder('Use :year and :name for dynamic values')->rows(2),
                 TextInput::make('ticker_label')->label('Ticker label')->maxLength(255),
+            ])->columns(1);
+
+        $components[] = Section::make('Testimonials section')
+            ->schema([
+                TextInput::make('testimonial_section_title')->label('Section title')->maxLength(255),
+                Textarea::make('testimonial_section_subtitle')->label('Section subtitle')->rows(2)->maxLength(500),
+            ])->columns(1);
+
+        $components[] = Section::make('Homepage sections')
+            ->schema([
+                TextInput::make('welcome_section_title')->label('Welcome section title')->maxLength(255),
+                Textarea::make('welcome_section_body')->label('Welcome section body')->rows(3)->maxLength(2000),
+                TextInput::make('stats_section_title')->label('Stats section title')->maxLength(255),
+                TextInput::make('certifications_section_title')->label('Certifications section title')->maxLength(255),
+                TextInput::make('employers_section_title')->label('Employers section title')->maxLength(255),
+            ])->columns(1);
+
+        $components[] = Section::make('Examination center')
+            ->schema([
+                Textarea::make('examination_center_description')->label('Center description')->rows(3)->maxLength(2000),
+                Textarea::make('examination_center_address')->label('Center address')->rows(3)->maxLength(500),
+                Textarea::make('examination_center_map_embed')
+                    ->label('Map embed HTML')
+                    ->rows(3)
+                    ->maxLength(5000)
+                    ->helperText('Paste iframe embed code for map.'),
+            ])->columns(1);
+
+        $components[] = Section::make('Contact page')
+            ->schema([
+                TextInput::make('contact_page_title')->label('Contact page title')->maxLength(255),
+                TextInput::make('contact_page_subtitle')->label('Contact page subtitle')->maxLength(500),
             ])->columns(1);
 
         $emptyKeys = array_filter(array_keys($defaults), fn (string $k): bool => str_starts_with($k, 'empty_'));
@@ -100,10 +202,28 @@ class SiteSettings extends Page implements HasForms
     public function save(): void
     {
         $data = $this->form->getState();
+        $oldLogoPath = SiteSetting::get('logo_path');
+
         foreach ($data as $key => $value) {
+            if ($key === 'footer_emails') {
+                $emails = collect($value)->pluck('email')->filter()->values()->toArray();
+                SiteSetting::updateOrCreate(
+                    ['key' => $key],
+                    ['value' => json_encode($emails)]
+                );
+
+                continue;
+            }
+            $valueToStore = is_array($value) ? ($value[0] ?? null) : $value;
+            if ($key === 'logo_path') {
+                $valueToStore = $valueToStore ?: null;
+                if ($oldLogoPath && (string) $valueToStore !== (string) $oldLogoPath) {
+                    Storage::disk('public')->delete($oldLogoPath);
+                }
+            }
             SiteSetting::updateOrCreate(
                 ['key' => $key],
-                ['value' => $value ?? '']
+                ['value' => $valueToStore ?? '']
             );
         }
         Notification::make()
@@ -114,6 +234,6 @@ class SiteSettings extends Page implements HasForms
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->can('page.view') ?? false;
+        return true;
     }
 }

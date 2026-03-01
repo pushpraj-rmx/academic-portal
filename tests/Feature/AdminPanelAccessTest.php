@@ -11,7 +11,7 @@ beforeEach(function () {
 test('guest cannot access admin panel and is redirected to login', function () {
     $response = $this->get('/admin');
 
-    $response->assertRedirect('/admin/login');
+    $response->assertRedirect(route('login'));
 });
 
 test('super admin can access admin panel', function () {

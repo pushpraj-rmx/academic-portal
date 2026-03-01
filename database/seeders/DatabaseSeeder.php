@@ -20,8 +20,16 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             PageSeeder::class,
             SiteSettingSeeder::class,
+            NavItemSeeder::class,
             AnnouncementSeeder::class,
             CourseCategorySeeder::class,
+            HeroSlideSeeder::class,
+            StatCounterSeeder::class,
+            CertificationSeeder::class,
+            FaqSeeder::class,
+            GradingRuleSeeder::class,
+            DownloadableFormSeeder::class,
+            IvimtContentSeeder::class,
         ]);
 
         User::firstOrCreate(

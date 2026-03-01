@@ -15,16 +15,8 @@ class PageController extends Controller
             abort(404);
         }
 
-        $homeCardSlugs = ['about', 'notices', 'director-message'];
-        $homeCardPages = Page::published()
-            ->whereIn('slug', $homeCardSlugs)
-            ->get()
-            ->sortBy(fn (Page $p): int => array_search($p->slug, $homeCardSlugs, true))
-            ->values();
-
         return response()->view('public.home', [
             'page' => $page,
-            'homeCardPages' => $homeCardPages,
         ]);
     }
 
