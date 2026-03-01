@@ -2,9 +2,9 @@
 @section('title', 'Courses - ' . config('app.name'))
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-3xl font-bold text-gray-900 mb-8">Courses</h1>
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">{{ settings('section_courses', 'Courses') }}</h1>
     @if($categories->isEmpty())
-        <p class="text-gray-600">No course categories available.</p>
+        <p class="text-gray-600">{{ settings('empty_course_categories', 'No course categories available.') }}</p>
     @else
         <ul class="space-y-8">
             @foreach($categories as $category)

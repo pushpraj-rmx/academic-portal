@@ -12,9 +12,9 @@
             <h1 class="text-3xl font-bold text-gray-900">{{ $course->name }}</h1>
             @if($course->duration || $course->intake || $course->eligibility)
                 <ul class="mt-2 text-gray-600 space-y-1">
-                    @if($course->duration)<li>Duration: {{ $course->duration }}</li>@endif
-                    @if($course->intake)<li>Intake: {{ $course->intake }}</li>@endif
-                    @if($course->eligibility)<li>Eligibility: {{ $course->eligibility }}</li>@endif
+                    @if($course->duration)<li>{{ __('public.duration') }}: {{ $course->duration }}</li>@endif
+                    @if($course->intake)<li>{{ __('public.intake') }}: {{ $course->intake }}</li>@endif
+                    @if($course->eligibility)<li>{{ __('public.eligibility') }}: {{ $course->eligibility }}</li>@endif
                 </ul>
             @endif
             @if($course->description)
@@ -26,7 +26,7 @@
 
         @if($course->specializations->isNotEmpty())
             <section class="mb-10">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">Specializations</h2>
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('public.specializations') }}</h2>
                 <ul class="space-y-4">
                     @foreach($course->specializations as $spec)
                         <li class="bg-white rounded-lg border border-gray-200 p-4">
@@ -35,10 +35,10 @@
                                 <p class="text-gray-600 text-sm mt-1">{{ $spec->description }}</p>
                             @endif
                             @if($spec->industry_relevance)
-                                <p class="text-gray-600 text-sm mt-1"><span class="font-medium">Industry relevance:</span> {{ Str::limit($spec->industry_relevance, 200) }}</p>
+                                <p class="text-gray-600 text-sm mt-1"><span class="font-medium">{{ __('public.industry_relevance') }}:</span> {{ Str::limit($spec->industry_relevance, 200) }}</p>
                             @endif
                             @if($spec->career_outcomes)
-                                <p class="text-gray-600 text-sm mt-1"><span class="font-medium">Career outcomes:</span> {{ Str::limit($spec->career_outcomes, 200) }}</p>
+                                <p class="text-gray-600 text-sm mt-1"><span class="font-medium">{{ __('public.career_outcomes') }}:</span> {{ Str::limit($spec->career_outcomes, 200) }}</p>
                             @endif
                         </li>
                     @endforeach
@@ -48,15 +48,15 @@
 
         @if($course->syllabi->isNotEmpty())
             <section>
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">Syllabus</h2>
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('public.syllabus') }}</h2>
                 <ul class="space-y-2">
                     @foreach($course->syllabi as $syllabus)
                         <li>
                             <a href="{{ route('academic.syllabus.download', $syllabus) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 font-medium">
                                 @if($syllabus->academic_year || $syllabus->version)
-                                    {{ $syllabus->academic_year ?: '' }}{{ $syllabus->academic_year && $syllabus->version ? ' — ' : '' }}{{ $syllabus->version ?: 'Syllabus' }}
+                                    {{ $syllabus->academic_year ?: '' }}{{ $syllabus->academic_year && $syllabus->version ? ' — ' : '' }}{{ $syllabus->version ?: __('public.syllabus') }}
                                 @else
-                                    Download syllabus (PDF)
+                                    {{ __('public.download_syllabus_pdf') }}
                                 @endif
                             </a>
                         </li>

@@ -15,7 +15,9 @@ class PageController extends Controller
             abort(404);
         }
 
-        return response()->view('public.home', ['page' => $page]);
+        return response()->view('public.home', [
+            'page' => $page,
+        ]);
     }
 
     public function show(Page $page): Response

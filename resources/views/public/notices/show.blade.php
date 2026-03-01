@@ -21,14 +21,14 @@
             @if($announcement->attachment)
                 <p class="mt-6">
                     <a href="{{ \Illuminate\Support\Facades\Storage::url($announcement->attachment) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium">
-                        Download PDF
+                        {{ __('public.download_pdf') }}
                     </a>
                 </p>
             @endif
         </article>
 
         <p class="mt-8">
-            <a href="{{ route('notices.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">&larr; Back to Notices</a>
+            <a href="{{ route('notices.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">&larr; {{ settings('back_to_notices', 'Back to Notices') }}</a>
         </p>
     </div>
 @endsection

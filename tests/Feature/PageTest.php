@@ -36,7 +36,7 @@ test('unpublished page returns 404', function () {
 });
 
 test('non-existent page slug returns 404', function () {
-    $response = $this->get('/page/non-existent-slug');
+    $response = $this->get('/non-existent-slug');
 
     $response->assertNotFound();
 });

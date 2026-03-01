@@ -42,6 +42,22 @@ class PageSeeder extends Seeder
                 'is_published' => true,
                 'sort_order' => 3,
             ],
+            [
+                'title' => 'Notices',
+                'slug' => 'notices',
+                'body' => '<p>Latest announcements, notices, and updates from the institute.</p>',
+                'meta_description' => 'Latest announcements and notices.',
+                'is_published' => true,
+                'sort_order' => 4,
+            ],
+            [
+                'title' => 'Pay Fee',
+                'slug' => 'pay-fee',
+                'body' => '<p>Please contact the accounts office for fee payment details.</p><p>You can also publish online payment instructions here.</p>',
+                'meta_description' => 'Fee payment information.',
+                'is_published' => true,
+                'sort_order' => 5,
+            ],
         ];
 
         foreach ($pages as $data) {

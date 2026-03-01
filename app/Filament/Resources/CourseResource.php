@@ -44,7 +44,11 @@ class CourseResource extends Resource
                 Forms\Components\TextInput::make('duration')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('intake')
-                    ->maxLength(255),
+                    ->label('Intake (capacity)')
+                    ->numeric()
+                    ->integer()
+                    ->minValue(1)
+                    ->nullable(),
                 Forms\Components\TextInput::make('eligibility')
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
