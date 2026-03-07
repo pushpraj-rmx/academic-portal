@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class HeroSlideResource extends Resource
 {
@@ -38,6 +39,11 @@ class HeroSlideResource extends Resource
                     ->directory('hero-slides')
                     ->image()
                     ->maxSize(4096)
+                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                        $name = normalize_upload_filename($file->getClientOriginalName());
+
+                        return str_contains($name, '.') ? $name : $name.'.'.$file->getClientOriginalExtension();
+                    })
                     ->helperText('Recommended landscape image for hero slider, max 4 MB.'),
                 Forms\Components\TextInput::make('sort_order')
                     ->numeric()

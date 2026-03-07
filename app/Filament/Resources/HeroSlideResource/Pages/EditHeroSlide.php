@@ -8,6 +8,8 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditHeroSlide extends EditRecord
 {
+    use NormalizesHeroSlideFileUploads;
+
     protected static string $resource = HeroSlideResource::class;
 
     protected function getHeaderActions(): array
@@ -15,5 +17,17 @@ class EditHeroSlide extends EditRecord
         return [
             Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function beforeValidate(): void
+    {
+        $this->normalizeInvalidLivewireFilePaths();
+    }
+
+    public function save(bool $shouldRedirect = true, bool $shouldSendSavedNotification = true): void
+    {
+        $this->normalizeInvalidLivewireFilePaths();
+
+        parent::save($shouldRedirect, $shouldSendSavedNotification);
     }
 }

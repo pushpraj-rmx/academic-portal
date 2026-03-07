@@ -8,8 +8,8 @@ echo "Installing PHP dependencies..."
 composer install --no-dev --optimize-autoloader --no-interaction
 
 echo "Building frontend assets..."
-npm ci
-npm run build
+pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+pnpm run build
 
 echo "Running migrations..."
 php artisan migrate --force

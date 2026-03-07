@@ -10,6 +10,8 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\Enums\TiptapOutput;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -35,7 +37,9 @@ class PageResource extends Resource
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)
                     ->rules(['alpha_dash']),
-                Forms\Components\RichEditor::make('body')
+                TiptapEditor::make('body')
+                    ->profile('default')
+                    ->output(TiptapOutput::Html)
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('meta_description')
                     ->maxLength(255)
@@ -95,6 +99,7 @@ class PageResource extends Resource
             'index' => Pages\ListPages::route('/'),
             'create' => Pages\CreatePage::route('/create'),
             'edit' => Pages\EditPage::route('/{record}/edit'),
+            'homepage' => Pages\EditHomepage::route('/homepage'),
         ];
     }
 

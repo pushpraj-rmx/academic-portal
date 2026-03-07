@@ -10,9 +10,17 @@
             @foreach($categories as $category)
                 <li class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
                     <a href="{{ route('academic.category.show', $category) }}" class="block group">
+                        @if($category->image_path)
+                            <img
+                                src="{{ asset('storage/' . ltrim($category->image_path, '/')) }}"
+                                alt="{{ $category->image_alt ?? $category->name }}"
+                                class="w-full h-44 object-cover rounded-md mb-4"
+                                loading="lazy"
+                            />
+                        @endif
                         <h2 class="text-xl font-semibold text-gray-900 group-hover:text-amber-600">{{ $category->name }}</h2>
                         @if($category->description)
-                            <p class="text-gray-600 mt-2">{{ Str::limit($category->description, 160) }}</p>
+                            <p class="text-gray-600 mt-2">{{ Str::limit(strip_tags($category->description), 160) }}</p>
                         @endif
                         <p class="text-sm text-gray-500 mt-2">{{ $category->courses_count }} {{ Str::plural('course', $category->courses_count) }}</p>
                     </a>

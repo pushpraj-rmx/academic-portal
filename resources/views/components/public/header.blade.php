@@ -19,7 +19,8 @@
     $payuUrl = settings('payu_url');
 @endphp
 
-<header class="sticky top-0 z-50 bg-white shadow-sm" x-data="{ mobileOpen: false }">
+<div x-data="{ mobileOpen: false }">
+<header class="bg-white">
     {{-- Tier 1: Black top bar – welcome left, social + PayU right --}}
     <div class="bg-black text-white text-sm">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
@@ -61,10 +62,11 @@
 
     {{-- Tier 2: White middle – logo + name left, Call Us / Mail Us / Location right --}}
     <div class="bg-white border-b border-gray-100">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <a href="{{ route('home') }}" class="flex items-center gap-3 shrink-0">
                 @if(settings('logo_path'))
-                    <img src="{{ Storage::disk('public')->url(settings('logo_path')) }}" alt="{{ config('app.name') }} logo" class="h-14 w-auto object-contain">
+                    <img src="{{ Storage::disk('public')->url(settings('logo_path')) }}" alt="{{ config('app.name') }} logo" class="
+                    logo w-auto object-contain">
                 @endif
                 <!-- <span class="text-lg font-bold text-gray-900 leading-tight">{{ config('app.name') }}</span> -->
             </a>
@@ -106,8 +108,10 @@
             </div>
         </div>
     </div>
+</header>
 
-    {{-- Tier 3: Dark gray nav bar – uppercase links, active in red --}}
+{{-- Nav bar – sticky on scroll (sibling of header so sticky works) --}}
+<div class="sticky top-0 z-50 bg-gray-800 shadow-md">
     <nav class="bg-gray-800" aria-label="Main navigation">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-12">
@@ -151,7 +155,7 @@
     </nav>
 
     {{-- Mobile menu --}}
-    <div class="md:hidden bg-gray-800 border-t border-gray-700" x-show="mobileOpen" x-transition>
+    <div class="md:hidden border-t border-gray-700" x-show="mobileOpen" x-transition>
         <div class="px-4 py-3 space-y-1">
             @foreach($headerNavItems as $item)
                 @if($item->isDropdown())
@@ -172,4 +176,5 @@
             @endforeach
         </div>
     </div>
-</header>
+</div>
+</div>

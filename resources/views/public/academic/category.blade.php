@@ -10,7 +10,7 @@
         <header class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900">{{ $category->name }}</h1>
             @if($category->description)
-                <p class="text-gray-600 mt-2">{{ $category->description }}</p>
+                <div class="text-gray-600 mt-2 prose prose-sm max-w-none">{!! $category->description !!}</div>
             @endif
         </header>
 

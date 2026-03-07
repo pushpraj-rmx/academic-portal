@@ -17,6 +17,23 @@ test('academic index lists only active categories', function () {
     $response->assertDontSee('Inactive Cat', false);
 });
 
+test('academic index shows category image when set', function () {
+    $category = CourseCategory::factory()->create([
+        'is_active' => true,
+        'name' => 'Engineering',
+        'slug' => 'engineering',
+        'image_path' => 'course-categories/engineering.jpg',
+        'image_alt' => 'Engineering courses',
+    ]);
+
+    $response = $this->get(route('academic.index'));
+
+    $response->assertSuccessful();
+    $response->assertSee('Engineering', false);
+    $response->assertSee('storage/course-categories/engineering.jpg', false);
+    $response->assertSee('Engineering courses', false);
+});
+
 test('category page shows only active courses when category is active', function () {
     $category = CourseCategory::factory()->create(['is_active' => true]);
     $activeCourse = Course::factory()->create(['course_category_id' => $category->id, 'name' => 'Active Course', 'is_active' => true]);

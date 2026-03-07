@@ -117,21 +117,6 @@ class SiteSettings extends Page implements HasForms
                 TextInput::make('ticker_label')->label('Ticker label')->maxLength(255),
             ])->columns(1);
 
-        $components[] = Section::make('Testimonials section')
-            ->schema([
-                TextInput::make('testimonial_section_title')->label('Section title')->maxLength(255),
-                Textarea::make('testimonial_section_subtitle')->label('Section subtitle')->rows(2)->maxLength(500),
-            ])->columns(1);
-
-        $components[] = Section::make('Homepage sections')
-            ->schema([
-                TextInput::make('welcome_section_title')->label('Welcome section title')->maxLength(255),
-                Textarea::make('welcome_section_body')->label('Welcome section body')->rows(3)->maxLength(2000),
-                TextInput::make('stats_section_title')->label('Stats section title')->maxLength(255),
-                TextInput::make('certifications_section_title')->label('Certifications section title')->maxLength(255),
-                TextInput::make('employers_section_title')->label('Employers section title')->maxLength(255),
-            ])->columns(1);
-
         $components[] = Section::make('Examination center')
             ->schema([
                 Textarea::make('examination_center_description')->label('Center description')->rows(3)->maxLength(2000),

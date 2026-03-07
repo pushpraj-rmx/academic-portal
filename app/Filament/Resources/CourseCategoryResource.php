@@ -10,8 +10,12 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\Enums\TiptapOutput;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class CourseCategoryResource extends Resource
 {
@@ -35,9 +39,25 @@ class CourseCategoryResource extends Resource
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)
                     ->rules(['alpha_dash']),
-                Forms\Components\Textarea::make('description')
-                    ->maxLength(65535)
+                TiptapEditor::make('description')
+                    ->profile('default')
+                    ->output(TiptapOutput::Html)
                     ->columnSpanFull(),
+                Forms\Components\FileUpload::make('image_path')
+                    ->label('Category image')
+                    ->disk('public')
+                    ->directory('course-categories')
+                    ->image()
+                    ->maxSize(4096)
+                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                        $name = normalize_upload_filename($file->getClientOriginalName());
+
+                        return str_contains($name, '.') ? $name : $name.'.'.$file->getClientOriginalExtension();
+                    })
+                    ->helperText('Optional image for the category cards, max 4 MB.'),
+                Forms\Components\TextInput::make('image_alt')
+                    ->label('Image alt text')
+                    ->maxLength(255),
                 Forms\Components\Toggle::make('is_active')
                     ->default(true),
                 Forms\Components\TextInput::make('sort_order')
@@ -50,8 +70,16 @@ class CourseCategoryResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image_path')
+                    ->disk('public')
+                    ->label('Image')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('slug')->searchable()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('courses_count')
+                    ->label('Courses')
+                    ->counts('courses')
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')->boolean()->sortable(),
                 Tables\Columns\TextColumn::make('sort_order')->sortable()->numeric(),
             ])
@@ -61,10 +89,37 @@ class CourseCategoryResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->before(function (CourseCategory $record): void {
+                        if ($record->courses()->exists()) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Cannot delete category')
+                                ->body('This category has courses. Reassign or delete the courses first.')
+                                ->danger()
+                                ->send();
+                            throw ValidationException::withMessages([
+                                'category' => ['This category has courses. Reassign or delete the courses first.'],
+                            ]);
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->before(function ($records): void {
+                            $withCourses = $records->filter(fn (CourseCategory $r) => $r->courses()->exists());
+                            if ($withCourses->isNotEmpty()) {
+                                $names = $withCourses->pluck('name')->join(', ');
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Cannot delete some categories')
+                                    ->body("These categories have courses: {$names}. Reassign or delete the courses first.")
+                                    ->danger()
+                                    ->send();
+                                throw ValidationException::withMessages([
+                                    'category' => ['One or more selected categories have courses. Reassign or delete the courses first.'],
+                                ]);
+                            }
+                        }),
                 ]),
             ]);
     }

@@ -3,10 +3,12 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\SiteSettings;
+use App\Filament\Resources\PageResource;
 use App\Http\Middleware\RedirectToCentralLogin;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -27,12 +29,21 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->brandName(config('app.name'))
             ->colors([
                 'primary' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->navigationItems([
+                NavigationItem::make('Homepage')
+                    ->url(fn (): string => PageResource::getUrl('homepage'))
+                    ->icon('heroicon-o-home')
+                    ->group('Content')
+                    ->sort(1)
+                    ->isActiveWhen(fn (): bool => str_ends_with(request()->path(), 'pages/homepage')),
+            ])
             ->pages([
                 Pages\Dashboard::class,
                 SiteSettings::class,

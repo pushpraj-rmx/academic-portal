@@ -9,6 +9,8 @@
 
     @include('components.public.welcome-section', ['page' => $page])
 
+    @include('components.public.home-two-column-section')
+
     @include('components.public.stat-counters')
 
     @include('components.public.course-cards')

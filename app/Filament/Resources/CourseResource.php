@@ -10,6 +10,8 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\Enums\TiptapOutput;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -51,8 +53,9 @@ class CourseResource extends Resource
                     ->nullable(),
                 Forms\Components\TextInput::make('eligibility')
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->maxLength(65535)
+                TiptapEditor::make('description')
+                    ->profile('default')
+                    ->output(TiptapOutput::Html)
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_active')
                     ->default(true),

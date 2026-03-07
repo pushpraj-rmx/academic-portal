@@ -11,6 +11,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased text-gray-900 bg-gray-50 min-h-screen flex flex-col">
+    <x-public.page-loader />
     @include('components.public.header')
 
     <main class="flex-1">

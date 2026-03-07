@@ -1,5 +1,34 @@
 <?php
 
+if (! function_exists('normalize_upload_filename')) {
+    /**
+     * Normalize a filename for safe storage and Livewire temp paths.
+     * Replaces spaces and other problematic characters to avoid path/serialization issues.
+     */
+    function normalize_upload_filename(string $filename): string
+    {
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $basename = pathinfo($filename, PATHINFO_FILENAME);
+
+        if ($basename === '') {
+            $basename = 'file';
+        }
+
+        $normalized = (string) str($basename)
+            ->replaceMatches('/\s+/', '-')
+            ->replaceMatches('/[^\p{L}\p{N}\-_]/u', '-')
+            ->replaceMatches('/-+/', '-')
+            ->trim('-')
+            ->lower();
+
+        if ($normalized === '') {
+            $normalized = 'file';
+        }
+
+        return $extension !== '' ? "{$normalized}.{$extension}" : $normalized;
+    }
+}
+
 if (! function_exists('settings')) {
     /**
      * Get a site setting value by key. Uses request-level cache via SiteSetting::get().

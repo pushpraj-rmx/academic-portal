@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\Enums\TiptapOutput;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Model;
 
 class AnnouncementResource extends Resource
@@ -31,7 +33,9 @@ class AnnouncementResource extends Resource
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)
                     ->rules(['alpha_dash']),
-                Forms\Components\RichEditor::make('body')
+                TiptapEditor::make('body')
+                    ->profile('default')
+                    ->output(TiptapOutput::Html)
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('attachment')
                     ->directory('announcements')
