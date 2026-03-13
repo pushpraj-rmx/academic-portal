@@ -4,7 +4,7 @@
         ->withCount('courses')
         ->orderBy('sort_order')
         ->orderBy('name')
-        ->limit(6)
+        ->limit(3)
         ->get();
 @endphp
 @if($courseCategories->isNotEmpty())

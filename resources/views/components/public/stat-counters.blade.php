@@ -8,7 +8,7 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 @foreach($stats as $stat)
                     <article class="bg-white rounded-lg border border-gray-200 p-6 text-center shadow-sm">
-                        <p class="text-3xl font-bold text-amber-600">{{ number_format($stat->value) }}{{ $stat->suffix }}</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-amber-600">{{ number_format($stat->value) }}{{ $stat->suffix }}</p>
                         <p class="mt-2 text-gray-700 font-medium">{{ $stat->label }}</p>
                     </article>
                 @endforeach

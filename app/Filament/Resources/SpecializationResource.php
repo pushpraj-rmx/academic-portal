@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class SpecializationResource extends Resource
 {
@@ -65,10 +66,37 @@ class SpecializationResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->before(function (Specialization $record): void {
+                        if ($record->syllabi()->exists()) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Cannot delete specialization')
+                                ->body('This specialization has syllabi linked. Remove or reassign the syllabi first.')
+                                ->danger()
+                                ->send();
+                            throw ValidationException::withMessages([
+                                'specialization' => ['This specialization has syllabi linked. Remove or reassign the syllabi first.'],
+                            ]);
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->before(function ($records): void {
+                            $withSyllabi = $records->filter(fn (Specialization $r) => $r->syllabi()->exists());
+                            if ($withSyllabi->isNotEmpty()) {
+                                $names = $withSyllabi->pluck('name')->join(', ');
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Cannot delete some specializations')
+                                    ->body("These specializations have syllabi linked: {$names}. Remove or reassign the syllabi first.")
+                                    ->danger()
+                                    ->send();
+                                throw ValidationException::withMessages([
+                                    'specialization' => ['One or more selected specializations have syllabi linked. Remove or reassign the syllabi first.'],
+                                ]);
+                            }
+                        }),
                 ]),
             ]);
     }

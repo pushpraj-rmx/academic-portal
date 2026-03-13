@@ -3,12 +3,12 @@
 @section('title', $category->name . ' - ' . config('app.name'))
 
 @section('content')
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <p class="mb-4">
             <a href="{{ route('academic.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">&larr; {{ settings('back_to_courses', 'Back to Courses') }}</a>
         </p>
         <header class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">{{ $category->name }}</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">{{ $category->name }}</h1>
             @if($category->description)
                 <div class="text-gray-600 mt-2 prose prose-sm max-w-none">{!! $category->description !!}</div>
             @endif
@@ -17,7 +17,7 @@
         @if($courses->isEmpty())
             <p class="text-gray-600">{{ settings('empty_courses_in_category', 'No courses in this category at the moment.') }}</p>
         @else
-            <ul class="space-y-6">
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-6 list-none p-0 m-0">
                 @foreach($courses as $course)
                     <li class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow transition">
                         <a href="{{ route('academic.course.show', $course) }}" class="block group">

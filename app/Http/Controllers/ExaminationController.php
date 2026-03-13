@@ -16,6 +16,11 @@ class ExaminationController extends Controller
         return view('public.examination.center');
     }
 
+    public function notes(): View
+    {
+        return view('public.examination.notes');
+    }
+
     public function faqs(): View
     {
         $faqs = Faq::query()

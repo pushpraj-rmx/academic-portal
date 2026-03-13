@@ -1,12 +1,13 @@
 @php
     $footerAddress = settings('footer_address');
-    $footerPhone = settings('footer_phone');
+    $footerPhone = settings('footer_phone', settings('topbar_phone'));
     $footerEmails = settings_array('footer_emails');
     $hasContact = $footerAddress || $footerPhone || count($footerEmails) > 0;
     $socialUrls = [
         'facebook' => settings('facebook_url'),
-        'google_plus' => settings('google_plus_url'),
         'twitter' => settings('twitter_url'),
+        'google_plus' => settings('google_plus_url'),
+        'linkedin' => settings('linkedin_url'),
         'pinterest' => settings('pinterest_url'),
         'vimeo' => settings('vimeo_url'),
     ];
@@ -15,7 +16,7 @@
 <footer class="bg-gray-800 text-gray-200 mt-auto" aria-label="Site footer">
     @if($hasContact)
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
                 <div class="flex flex-col items-center md:items-start text-center md:text-left">
                     <div class="flex items-center gap-2 text-red-500 mb-2" aria-hidden="true">
                         <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -29,8 +30,7 @@
                         <p class="text-sm text-gray-500">—</p>
                     @endif
                 </div>
-                <div class="hidden md:block w-px bg-gray-600 self-stretch justify-self-center min-h-[4rem]" aria-hidden="true"></div>
-                <div class="flex flex-col items-center md:items-start text-center md:text-left">
+                <div class="flex flex-col items-center md:items-start text-center md:text-left md:border-l md:border-gray-600 md:pl-6">
                     <div class="flex items-center gap-2 text-red-500 mb-2" aria-hidden="true">
                         <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
@@ -43,8 +43,7 @@
                         <p class="text-sm text-gray-500">—</p>
                     @endif
                 </div>
-                <div class="hidden md:block w-px bg-gray-600 self-stretch justify-self-center min-h-[4rem]" aria-hidden="true"></div>
-                <div class="flex flex-col items-center md:items-start text-center md:text-left">
+                <div class="flex flex-col items-center md:items-start text-center md:text-left md:border-l md:border-gray-600 md:pl-6">
                     <div class="flex items-center gap-2 text-red-500 mb-2" aria-hidden="true">
                         <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
@@ -76,14 +75,19 @@
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         </a>
                     @endif
+                    @if($socialUrls['twitter'])
+                        <a href="{{ $socialUrls['twitter'] }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors" aria-label="Twitter">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    @endif
                     @if($socialUrls['google_plus'])
                         <a href="{{ $socialUrls['google_plus'] }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors" aria-label="Google Plus">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.385 0 0 5.385 0 12s5.385 12 12 12 12-5.385 12-12S18.615 0 12 0zm-1 17v-4H7v-2h4V7h2v4h4v2h-4v4h-2z"/></svg>
                         </a>
                     @endif
-                    @if($socialUrls['twitter'])
-                        <a href="{{ $socialUrls['twitter'] }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors" aria-label="Twitter">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    @if($socialUrls['linkedin'])
+                        <a href="{{ $socialUrls['linkedin'] }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors" aria-label="LinkedIn">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                         </a>
                     @endif
                     @if($socialUrls['pinterest'])
@@ -117,7 +121,7 @@
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
-    class="fixed bottom-6 right-6 z-50 flex items-center justify-center w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+    class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 touch-manipulation"
     aria-label="Scroll to top"
 >
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -4,9 +4,11 @@
 
 @section('content')
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-4">Examination Center</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Examination Center</h1>
         @if(settings('examination_center_description'))
-            <p class="text-gray-700 mb-6">{{ settings('examination_center_description') }}</p>
+            <div class="prose prose-sm sm:prose max-w-none text-gray-700 mb-6">
+                {!! settings('examination_center_description') !!}
+            </div>
         @endif
 
         <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">

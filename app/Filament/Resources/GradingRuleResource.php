@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\Enums\TiptapOutput;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Model;
 
 class GradingRuleResource extends Resource
@@ -43,8 +45,10 @@ class GradingRuleResource extends Resource
                     ->minValue(0)
                     ->maxValue(10)
                     ->step(0.01),
-                Forms\Components\Textarea::make('description')
-                    ->rows(3)
+                TiptapEditor::make('description')
+                    ->label('Description')
+                    ->profile('default')
+                    ->output(TiptapOutput::Html)
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('sort_order')
                     ->numeric()

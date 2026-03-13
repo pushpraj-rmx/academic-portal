@@ -2,7 +2,7 @@
 @section('title', ($student ? 'Results - ' . $student->user->name : 'Results') . ' - ' . config('app.name'))
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-3xl font-bold text-gray-900 mb-8">{{ settings('section_exam_results', 'Exam Results') }}</h1>
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">{{ settings('section_exam_results', 'Exam Results') }}</h1>
 
     @if(! $student)
         <p class="text-gray-600">{{ settings('empty_student_not_found', 'No student found with that roll number or enrollment ID.') }}</p>
@@ -27,7 +27,8 @@
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ $session->name }}</h2>
                     <p class="text-sm text-gray-500 mb-4">{{ $session->academic_year }} · {{ $session->session_type }}</p>
 
-                    <table class="min-w-full divide-y divide-gray-200 mb-4">
+                    <div class="overflow-x-auto -mx-1">
+                        <table class="min-w-full divide-y divide-gray-200 mb-4">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="py-2 px-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('public.subject') }}</th>
@@ -43,6 +44,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
 
                     <div class="flex flex-wrap gap-4 text-sm">
                         <span><strong>{{ __('public.total') }}:</strong> {{ number_format($result['marks_obtained'], 2) }} / {{ number_format($result['total_marks'], 2) }}</span>

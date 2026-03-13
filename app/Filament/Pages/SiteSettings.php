@@ -14,6 +14,8 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use FilamentTiptapEditor\Enums\TiptapOutput;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Support\Facades\Storage;
 
 class SiteSettings extends Page implements HasForms
@@ -119,13 +121,47 @@ class SiteSettings extends Page implements HasForms
 
         $components[] = Section::make('Examination center')
             ->schema([
-                Textarea::make('examination_center_description')->label('Center description')->rows(3)->maxLength(2000),
-                Textarea::make('examination_center_address')->label('Center address')->rows(3)->maxLength(500),
+                TiptapEditor::make('examination_center_description')
+                    ->label('Center description / details')
+                    ->profile('default')
+                    ->output(TiptapOutput::Html)
+                    ->columnSpanFull(),
+                Textarea::make('examination_center_address')
+                    ->label('Center address (plain text)')
+                    ->rows(3)
+                    ->maxLength(500),
                 Textarea::make('examination_center_map_embed')
                     ->label('Map embed HTML')
                     ->rows(3)
                     ->maxLength(5000)
                     ->helperText('Paste iframe embed code for map.'),
+            ])->columns(1);
+
+        $components[] = Section::make('Examination notes')
+            ->description('Content for the public Examination notes page (/examination/notes).')
+            ->schema([
+                Textarea::make('examination_notes')
+                    ->label('Notes content')
+                    ->rows(12)
+                    ->maxLength(65535)
+                    ->placeholder('Instructions, guidelines, or notes for students about examinations.')
+                    ->columnSpanFull(),
+            ])->columns(1);
+
+        $components[] = Section::make('Grading system')
+            ->description('Intro text shown above the grading rules table on /examination/grading-system. When no rules exist, the placeholder below is shown (rich content).')
+            ->schema([
+                TiptapEditor::make('grading_system_intro')
+                    ->label('Intro / description')
+                    ->profile('default')
+                    ->output(TiptapOutput::Html)
+                    ->columnSpanFull(),
+                TiptapEditor::make('grading_system_empty_content')
+                    ->label('Placeholder when no rules')
+                    ->helperText('Shown when no grading rules have been added. Supports rich text (headings, lists, links). If empty, a default message is shown.')
+                    ->profile('default')
+                    ->output(TiptapOutput::Html)
+                    ->columnSpanFull(),
             ])->columns(1);
 
         $components[] = Section::make('Contact page')

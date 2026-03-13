@@ -9,7 +9,7 @@
                 @if($announcement->published_at)
                     <p class="text-sm text-gray-500 mb-2">{{ $announcement->published_at->format('F j, Y') }}</p>
                 @endif
-                <h1 class="text-3xl font-bold text-gray-900">{{ $announcement->title }}</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">{{ $announcement->title }}</h1>
             </header>
 
             @if($announcement->body)

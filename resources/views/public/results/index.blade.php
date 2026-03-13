@@ -2,7 +2,7 @@
 @section('title', 'Results - ' . config('app.name'))
 @section('content')
 <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">{{ settings('section_check_results', 'Check Results') }}</h1>
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">{{ settings('section_check_results', 'Check Results') }}</h1>
     <p class="text-gray-600 mb-8">{{ settings('results_intro', 'Enter your roll number or enrollment ID to view your exam results.') }}</p>
     <form action="{{ route('results.search') }}" method="get" class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
         <div class="space-y-4">

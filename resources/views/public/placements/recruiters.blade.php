@@ -2,7 +2,7 @@
 @section('title', 'Our Recruiters - ' . config('app.name'))
 @section('content')
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-3xl font-bold text-gray-900 mb-8">{{ settings('section_recruiters', 'Our Recruiters') }}</h1>
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">{{ settings('section_recruiters', 'Our Recruiters') }}</h1>
     <p class="text-gray-600 mb-6"><a href="{{ route('placements.statistics') }}" class="text-amber-600 hover:text-amber-700 font-medium">{{ settings('placement_statistics_link', 'View placement statistics') }}</a></p>
     @if($recruiters->isEmpty())
         <p class="text-gray-600">{{ settings('empty_recruiters', 'No recruiters to display.') }}</p>

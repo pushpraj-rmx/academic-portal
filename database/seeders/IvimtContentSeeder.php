@@ -260,11 +260,14 @@ class IvimtContentSeeder extends Seeder
     private function seedTestimonials(): void
     {
         $testimonials = [
-            ['name' => 'Alumni / Student', 'body' => 'The faculty and course structure at IVIMT helped me build a strong foundation. The placement support was timely and effective.', 'sort_order' => 1],
-            ['name' => 'Alumni / Student', 'body' => 'I chose IVIMT for its reputation and flexible programmes. The institute gave me the right balance of theory and practical exposure.', 'sort_order' => 2],
-            ['name' => 'Alumni / Student', 'body' => 'Quality education and a supportive environment. I am grateful for the skills and confidence I gained here.', 'sort_order' => 3],
-            ['name' => 'Alumni / Student', 'body' => 'The management courses are well-designed and the faculty is approachable. A good choice for working professionals.', 'sort_order' => 4],
-            ['name' => 'Alumni / Student', 'body' => 'IVIMT opened doors for me. The certification and placement assistance were exactly what I needed to advance my career.', 'sort_order' => 5],
+            ['name' => 'Priya Sharma', 'body' => 'The faculty and course structure at IVIMT helped me build a strong foundation. The placement support was timely and effective. I landed a role in a reputed firm right after completing my course.', 'sort_order' => 1],
+            ['name' => 'Rahul Verma', 'body' => 'I chose IVIMT for its reputation and flexible programmes. The institute gave me the right balance of theory and practical exposure. The industry-relevant curriculum made the transition to my job smooth.', 'sort_order' => 2],
+            ['name' => 'Anita Desai', 'body' => 'Quality education and a supportive environment. I am grateful for the skills and confidence I gained here. The faculty went the extra mile to clarify doubts and guide us through projects.', 'sort_order' => 3],
+            ['name' => 'Vikram Singh', 'body' => 'The management courses are well-designed and the faculty is approachable. A good choice for working professionals who want to upskill without compromising on their jobs. Highly recommend IVIMT.', 'sort_order' => 4],
+            ['name' => 'Sneha Reddy', 'body' => 'IVIMT opened doors for me. The certification and placement assistance were exactly what I needed to advance my career. The alumni network and industry tie-ups are a real advantage.', 'sort_order' => 5],
+            ['name' => 'Arjun Mehta', 'body' => 'From day one, the focus was on practical learning. The computer labs, workshops, and industry visits added immense value. I feel well-prepared for the tech industry today.', 'sort_order' => 6],
+            ['name' => 'Kavita Nair', 'body' => 'As a working professional, I needed a programme that fit my schedule. IVIMT delivered that without compromising on quality. The weekend batches and online support made it possible for me to complete my diploma.', 'sort_order' => 7],
+            ['name' => 'Rohit Gupta', 'body' => 'The examination process was fair and transparent. The grading system was clear, and the faculty was always available to help us prepare. My experience at IVIMT has been rewarding in every way.', 'sort_order' => 8],
         ];
 
         foreach ($testimonials as $t) {

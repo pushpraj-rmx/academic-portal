@@ -24,12 +24,16 @@
                     visible: 2,
                     get maxIndex() { return Math.max(0, this.total - this.visible) },
                     prev() { this.index = Math.max(0, this.index - 1) },
-                    next() { this.index = Math.min(this.maxIndex, this.index + 1) },
-                    get translateX() { return -this.index * (100 / this.visible) },
+                    next() {
+                        if (this.index >= this.maxIndex) { this.index = 0; }
+                        else { this.index = this.index + 1; }
+                    },
+                    get translateX() { return this.total > 0 ? -this.index * (100 * this.visible / this.total) : 0 },
                     init() {
                         const update = () => { this.visible = window.innerWidth >= 768 ? 2 : 1 };
                         update();
                         window.addEventListener('resize', update);
+                        setInterval(() => { this.next(); }, 5000);
                     }
                 }"
                 :style="'--visible: ' + visible + '; --total: ' + total"
@@ -58,10 +62,10 @@
                         :style="'width: calc(var(--total) * (100% / var(--visible))); transform: translateX(' + translateX + '%)'"
                     >
                         @foreach($testimonials as $testimonial)
-                            <div class="flex-shrink-0 px-2 sm:px-3" :style="'width: calc(100% / var(--visible))'">
-                                <article class="relative bg-gray-100 rounded-lg shadow-md p-6 sm:p-8 pt-14 text-gray-700 h-full">
-                                    <span class="absolute top-4 left-4 text-5xl sm:text-6xl text-red-500 font-serif leading-none" aria-hidden="true">"</span>
-                                    <span class="absolute bottom-4 right-4 text-5xl sm:text-6xl text-red-500 font-serif leading-none" aria-hidden="true">"</span>
+                            <div class="flex-shrink-0 px-2 sm:px-3" :style="'width: calc(100% / var(--total))'">
+                                <article class="relative bg-gray-100 rounded-lg shadow-md p-6 sm:p-8 pt-20 pb-12 pr-10 text-gray-700 h-full overflow-visible">
+                                    <span class="absolute top-4 left-4 text-5xl sm:text-6xl text-red-500 font-serif leading-none select-none" aria-hidden="true">"</span>
+                                    <span class="absolute bottom-6 right-6 text-5xl sm:text-6xl text-red-500 font-serif leading-none select-none" aria-hidden="true">"</span>
                                     <div class="flex flex-col items-center text-center">
                                         @if($testimonial->avatar)
                                             <img src="{{ Storage::disk('public')->url($testimonial->avatar) }}" alt="" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md -mt-16 mb-3" loading="lazy">

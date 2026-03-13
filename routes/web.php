@@ -32,6 +32,7 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 
 Route::get('/examination/forms', [ExaminationController::class, 'forms'])->name('examination.forms');
 Route::get('/examination/center', [ExaminationController::class, 'center'])->name('examination.center');
+Route::get('/examination/notes', [ExaminationController::class, 'notes'])->name('examination.notes');
 Route::get('/examination/faqs', [ExaminationController::class, 'faqs'])->name('examination.faqs');
 Route::get('/examination/grading-system', [ExaminationController::class, 'gradingSystem'])->name('examination.grading-system');
 Route::get('/downloads/{downloadableForm}', [ExaminationController::class, 'downloadForm'])->name('downloads.form');

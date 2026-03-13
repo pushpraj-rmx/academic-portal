@@ -46,6 +46,7 @@ class SiteSetting extends Model
             'empty_student_not_found' => 'No student found with that roll number or enrollment ID.',
             'empty_no_results' => 'No published results found for this student.',
             'empty_examination_faqs' => 'No FAQs available right now.',
+            'empty_examination_notes' => 'No examination notes have been published yet. Please check back later.',
             'empty_grading_rules' => 'No grading rules available right now.',
             'empty_exam_forms' => 'No exam forms available right now.',
             'empty_application_forms' => 'No application forms available right now.',
@@ -83,6 +84,9 @@ class SiteSetting extends Model
             'examination_center_address' => '',
             'examination_center_description' => '',
             'examination_center_map_embed' => '',
+            'examination_notes' => '',
+            'grading_system_intro' => '',
+            'grading_system_empty_content' => '',
             'currency_symbol' => '₹',
             'lpa_label' => 'LPA',
         ];

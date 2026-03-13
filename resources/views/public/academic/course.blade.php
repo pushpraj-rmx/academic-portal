@@ -9,7 +9,7 @@
         </p>
 
         <header class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">{{ $course->name }}</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">{{ $course->name }}</h1>
             @if($course->duration || $course->intake || $course->eligibility)
                 <ul class="mt-2 text-gray-600 space-y-1">
                     @if($course->duration)<li>{{ __('public.duration') }}: {{ $course->duration }}</li>@endif

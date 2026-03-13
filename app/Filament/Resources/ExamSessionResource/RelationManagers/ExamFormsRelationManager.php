@@ -25,7 +25,7 @@ class ExamFormsRelationManager extends RelationManager
                     ->relationship(
                         name: 'student',
                         titleAttribute: 'roll_number',
-                        modifyQueryUsing: fn ($q) => $q->whereIn('course_id', $sessionSubjectCourseIds)
+                        modifyQueryUsing: fn ($query) => $query->whereIn('course_id', $sessionSubjectCourseIds)
                     )
                     ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->user->name.' ('.$record->roll_number.')')
                     ->required()

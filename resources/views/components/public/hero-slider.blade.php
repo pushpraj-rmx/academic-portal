@@ -3,7 +3,7 @@
 @endphp
 @if($slides->isNotEmpty())
     <section class="relative bg-gray-900 text-white" x-data="{ index: 0, total: {{ $slides->count() }} }" x-init="setInterval(() => { index = (index + 1) % total }, 6000)">
-        <div class="relative h-[40rem] overflow-hidden">
+        <div class="relative w-full aspect-[1/1] sm:aspect-auto sm:h-80 md:h-96 lg:h-[40rem] overflow-hidden">
             @foreach($slides as $slide)
                 <div x-show="index === {{ $loop->index }}" x-transition.opacity.duration.700ms class="absolute inset-0">
                     @if($slide->image)
@@ -13,9 +13,9 @@
                     @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" aria-hidden="true"></div>
                     <div class="absolute inset-0 flex items-center">
-                        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-8 pb-8 sm:pt-0 sm:pb-0">
                             <div class="max-w-2xl">
-                                <h1 class="text-3xl sm:text-5xl font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">{{ $slide->title }}</h1>
+                                <h1 class="text-3xl sm:text-5xl font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] leading-tight">{{ $slide->title }}</h1>
                                 @if($slide->subtitle)
                                     <p class="mt-3 text-base sm:text-lg text-gray-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">{{ $slide->subtitle }}</p>
                                 @endif

@@ -10,11 +10,11 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased text-gray-900 bg-gray-50 min-h-screen flex flex-col">
+<body class="font-sans antialiased text-gray-900 bg-gray-50 min-h-screen flex flex-col overflow-x-hidden">
     <x-public.page-loader />
     @include('components.public.header')
 
-    <main class="flex-1">
+    <main class="flex-1 w-full min-w-0 overflow-x-hidden">
         @yield('content')
     </main>
 

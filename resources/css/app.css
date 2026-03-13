@@ -3,6 +3,92 @@
 @tailwind utilities;
 
 
+/* Prevent horizontal overflow on mobile */
+html {
+    overflow-x: hidden;
+}
+
+/* Logo: smaller on mobile for better fit in header */
 img.logo {
-    max-height: 110px;
+    max-height: 80px;
+    max-width: 100%;
+    object-fit: contain;
+}
+@media (min-width: 640px) {
+    img.logo {
+        max-height: 110px;
+    }
+}
+
+/* Prose: allow horizontal scroll on small screens when tables/content overflow */
+.prose,
+.prose-lg {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Bordered tables in rich text / prose content */
+.prose table,
+.prose-lg table {
+    @apply w-full border-collapse;
+    table-layout: fixed;
+}
+@media (max-width: 639px) {
+    .prose table,
+    .prose-lg table {
+        table-layout: auto;
+        min-width:  min(100%, 32rem);
+    }
+}
+.prose th,
+.prose td,
+.prose-lg th,
+.prose-lg td {
+    @apply border border-gray-300 px-3 py-2 text-left;
+}
+/* First column gets a fixed share so columns aren't uneven (e.g. S.No vs Subject) */
+.prose table th:first-child,
+.prose table td:first-child,
+.prose-lg table th:first-child,
+.prose-lg table td:first-child {
+    width: 20%;
+    min-width: 5rem;
+}
+.prose th,
+.prose-lg th {
+    @apply bg-gray-100 font-semibold text-gray-900;
+}
+.prose tbody tr:nth-child(even),
+.prose-lg tbody tr:nth-child(even) {
+    @apply bg-gray-50;
+}
+.prose tbody tr:nth-child(odd),
+.prose-lg tbody tr:nth-child(odd) {
+    @apply bg-white;
+}
+.prose thead,
+.prose-lg thead {
+    @apply border-b-2 border-gray-400;
+}
+
+/* Spacing between sections in rich text (tables, headings, blocks) */
+.prose > * + *,
+.prose-lg > * + * {
+    @apply mt-4;
+}
+.prose > table,
+.prose > h2,
+.prose > h3,
+.prose-lg > table,
+.prose-lg > h2,
+.prose-lg > h3 {
+    @apply mt-8;
+}
+.prose > table + *,
+.prose > h2 + *,
+.prose > h3 + *,
+.prose-lg > table + *,
+.prose-lg > h2 + *,
+.prose-lg > h3 + * {
+    @apply mt-6;
 }

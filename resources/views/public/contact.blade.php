@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ settings('contact_page_title', 'Contact') }}</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ settings('contact_page_title', 'Contact') }}</h1>
         <p class="text-gray-600 mb-8">{{ settings('contact_page_subtitle', 'Get in touch with us for any query.') }}</p>
 
         @if(session('status'))
