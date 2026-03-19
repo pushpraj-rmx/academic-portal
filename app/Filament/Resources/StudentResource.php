@@ -5,12 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Models\Student;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 
 class StudentResource extends Resource
 {
@@ -24,22 +26,42 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
+                Forms\Components\TextInput::make('name')
+                    ->label('Student name')
                     ->required()
-                    ->searchable()
-                    ->preload(),
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->label('Email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255)
+                    ->unique(table: User::class, column: 'email'),
+                Forms\Components\TextInput::make('password')
+                    ->label('Initial password')
+                    ->password()
+                    ->required()
+                    ->minLength(8),
                 Forms\Components\Select::make('course_id')
                     ->relationship('course', 'name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 Forms\Components\TextInput::make('enrollment_id')
-                    ->required()
-                    ->maxLength(255),
+                    ->label('Enrollment ID')
+                    ->maxLength(255)
+                    ->unique(table: Student::class, column: 'enrollment_id'),
                 Forms\Components\TextInput::make('roll_number')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->rules([
+                        fn (callable $get) => Rule::unique('students', 'roll_number')
+                            ->where('course_id', $get('course_id')),
+                    ]),
+                Forms\Components\DatePicker::make('date_of_birth')
+                    ->label('Date of birth')
+                    ->native(false)
+                    ->displayFormat('d M Y')
+                    ->maxDate(now()),
                 Forms\Components\TextInput::make('phone')
                     ->tel()
                     ->maxLength(50),

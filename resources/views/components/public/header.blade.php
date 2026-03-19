@@ -133,8 +133,8 @@
 <div class="sticky top-0 z-50 bg-gray-800 shadow-md overflow-hidden lg:overflow-visible">
     <nav class="bg-gray-800" aria-label="Main navigation">
         <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-12">
-                <div class="hidden lg:flex items-center gap-1 flex-wrap">
+            <div class="flex items-center h-12">
+                <div class="hidden lg:flex flex-1 items-center justify-between min-w-0">
                     @foreach($headerNavItems as $item)
                         @if($item->isDropdown())
                             <div class="relative group">

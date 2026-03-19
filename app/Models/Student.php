@@ -18,6 +18,7 @@ class Student extends Model
         'course_id',
         'enrollment_id',
         'roll_number',
+        'date_of_birth',
         'phone',
         'alternate_phone',
         'verification_status',
@@ -29,8 +30,29 @@ class Student extends Model
     protected function casts(): array
     {
         return [
+            'date_of_birth' => 'date',
             'verified_at' => 'datetime',
         ];
+    }
+
+    public static function generateEnrollmentId(): string
+    {
+        $year = now()->year;
+        $prefix = "IVIMT-{$year}-";
+
+        $last = static::query()
+            ->where('enrollment_id', 'like', "{$prefix}%")
+            ->orderByDesc('enrollment_id')
+            ->value('enrollment_id');
+
+        $next = 1;
+
+        if ($last) {
+            $number = (int) str_replace($prefix, '', $last);
+            $next = $number + 1;
+        }
+
+        return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 
     public function scopePending(Builder $query): Builder

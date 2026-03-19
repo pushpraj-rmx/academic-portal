@@ -22,6 +22,7 @@ class StudentFactory extends Factory
             'course_id' => Course::factory(),
             'enrollment_id' => fake()->unique()->numerify('ENR########'),
             'roll_number' => fake()->numerify('ROLL###'),
+            'date_of_birth' => fake()->dateTimeBetween('-30 years', '-18 years')->format('Y-m-d'),
             'phone' => fake()->optional()->phoneNumber(),
             'alternate_phone' => null,
             'verification_status' => 'pending',

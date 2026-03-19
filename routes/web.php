@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\UserRole;
+use App\Filament\Pages\ImportSubjectMarks;
 use App\Http\Controllers\AcademicController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ContactController;
@@ -63,6 +64,36 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Filament admin custom pages
+Route::middleware(['panel:admin'])->group(function () {
+    Route::get('/admin/import-subject-marks', ImportSubjectMarks::class)
+        ->name('filament.admin.pages.import-subject-marks');
+    Route::get('/admin/import-students/sample', function () {
+        $content = implode("\n", [
+            'name,email,course_slug,roll_number,dob,phone,alternate_phone',
+            'Rahul Sharma,rahul@example.com,bca,101,2003-05-14,9876543210,',
+        ])."\n";
+
+        return response($content, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="students-sample.csv"',
+        ]);
+    })->name('admin.import-students.sample');
+
+    Route::get('/admin/import-subject-marks/sample', function () {
+        $content = implode("\n", [
+            'enrollment_id,subject_code,marks,absent',
+            'IVIMT-2026-0001,MATH101,85,0',
+            'IVIMT-2026-0002,MATH101,72,0',
+        ])."\n";
+
+        return response($content, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="subject-marks-sample.csv"',
+        ]);
+    })->name('admin.import-subject-marks.sample');
+});
 
 // Catch-all for CMS pages only; allow only known page slugs so /admin and /admin/* stay with Filament
 Route::get('/{page:slug}', [PageController::class, 'show'])

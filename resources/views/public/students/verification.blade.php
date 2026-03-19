@@ -7,16 +7,26 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-6">Students Verification</h1>
 
         <form action="{{ route('students.verification.search') }}" method="get" class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <label for="query" class="block text-sm font-medium text-gray-700">Enrollment ID or Roll Number</label>
-            <div class="mt-2 flex flex-col sm:flex-row gap-3">
-                <input id="query" name="query" type="text" value="{{ old('query', $query) }}" required maxlength="255"
-                    class="w-full rounded-md border-gray-300 focus:border-amber-500 focus:ring-amber-500"
-                    placeholder="e.g. ENR-2026-001">
-                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-md hover:bg-amber-700">
-                    Verify
-                </button>
+            <div class="space-y-4">
+                <div>
+                    <label for="query" class="block text-sm font-medium text-gray-700">Enrollment ID or Roll Number</label>
+                    <input id="query" name="query" type="text" value="{{ old('query', $query) }}" required maxlength="255"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm"
+                        placeholder="e.g. ENR-2026-001">
+                    @error('query')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label for="dob" class="block text-sm font-medium text-gray-700">Date of birth</label>
+                    <input id="dob" name="dob" type="date" value="{{ old('dob', $dob ?? '') }}" required max="{{ date('Y-m-d') }}"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm">
+                    @error('dob')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-md hover:bg-amber-700">
+                        Verify
+                    </button>
+                </div>
             </div>
-            @error('query')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
         </form>
 
         @if($query !== null)

@@ -17,17 +17,37 @@ test('students verification page is accessible', function () {
     $response->assertSee('Students Verification', false);
 });
 
-test('students verification search finds student by enrollment id', function () {
+test('students verification search finds student by enrollment id and dob', function () {
     $student = Student::factory()->create([
         'enrollment_id' => 'ENR-TEST-001',
+        'date_of_birth' => '2000-05-15',
     ]);
     $student->load('user');
 
-    $response = $this->get(route('students.verification.search', ['query' => 'ENR-TEST-001']));
+    $response = $this->get(route('students.verification.search', [
+        'query' => 'ENR-TEST-001',
+        'dob' => '2000-05-15',
+    ]));
 
     $response->assertSuccessful();
     $response->assertSee('Student Found', false);
     $response->assertSee('ENR-TEST-001', false);
+});
+
+test('students verification search does not find student when dob does not match', function () {
+    $student = Student::factory()->create([
+        'enrollment_id' => 'ENR-TEST-002',
+        'date_of_birth' => '2000-05-15',
+    ]);
+
+    $response = $this->get(route('students.verification.search', [
+        'query' => 'ENR-TEST-002',
+        'dob' => '1999-01-01',
+    ]));
+
+    $response->assertSuccessful();
+    $response->assertSee(settings('empty_student_not_found', 'No student found'), false);
+    $response->assertDontSee('Student Found', false);
 });
 
 test('students application forms page shows admission forms only', function () {

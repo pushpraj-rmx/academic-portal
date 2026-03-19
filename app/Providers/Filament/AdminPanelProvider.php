@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\SiteSettings;
+use App\Filament\Pages\ImportStudents;
+use App\Filament\Pages\ImportSubjectMarks;
 use App\Filament\Resources\PageResource;
 use App\Http\Middleware\RedirectToCentralLogin;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -47,6 +49,8 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
                 SiteSettings::class,
+                ImportStudents::class,
+                ImportSubjectMarks::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

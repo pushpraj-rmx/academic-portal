@@ -15,6 +15,7 @@ class StudentVerificationSearchRequest extends FormRequest
     {
         return [
             'query' => ['required', 'string', 'max:255'],
+            'dob' => ['required', 'date', 'before_or_equal:today'],
         ];
     }
 }

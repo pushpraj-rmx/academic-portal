@@ -18,7 +18,11 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div>
                 <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                    @if(settings('logo_path'))
+                        <img src="{{ Storage::disk('public')->url(settings('logo_path')) }}" alt="{{ config('app.name') }} logo" class="w-20 h-20 object-contain">
+                    @else
+                        <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                    @endif
                 </a>
             </div>
 

@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->ensureStorageFrameworkDirectoriesExist();
     }
 
     /**
@@ -77,5 +77,21 @@ class AppServiceProvider extends ServiceProvider
         }
 
         return $data;
+    }
+
+    /**
+     * Ensure storage/framework subdirectories exist so the view compiler and others get a valid path.
+     * Required when deploying via zip (these dirs are excluded from the archive).
+     */
+    private function ensureStorageFrameworkDirectoriesExist(): void
+    {
+        $base = storage_path('framework');
+        $dirs = ['cache/data', 'sessions', 'views'];
+        foreach ($dirs as $dir) {
+            $path = $base.DIRECTORY_SEPARATOR.$dir;
+            if (! is_dir($path)) {
+                mkdir($path, 0755, true);
+            }
+        }
     }
 }
