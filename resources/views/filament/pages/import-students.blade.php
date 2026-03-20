@@ -23,7 +23,11 @@
                                 <th class="px-3 py-2 text-left font-medium text-gray-700">Email</th>
                                 <th class="px-3 py-2 text-left font-medium text-gray-700">Course</th>
                                 <th class="px-3 py-2 text-left font-medium text-gray-700">Roll</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-700">Father</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-700">Mother</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-700">Enrollment ID</th>
                                 <th class="px-3 py-2 text-left font-medium text-gray-700">DOB</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-700">Verification</th>
                                 <th class="px-3 py-2 text-left font-medium text-gray-700">Errors</th>
                             </tr>
                         </thead>
@@ -37,7 +41,11 @@
                                         {{ $cid ? \App\Models\Course::find($cid)?->name : '' }}
                                     </td>
                                     <td class="px-3 py-2 text-gray-900">{{ $row['roll_number'] ?? '' }}</td>
+                                    <td class="px-3 py-2 text-gray-900">{{ $row['father_name'] ?? '' }}</td>
+                                    <td class="px-3 py-2 text-gray-900">{{ $row['mother_name'] ?? '' }}</td>
+                                    <td class="px-3 py-2 text-gray-900">{{ $row['enrollment_id'] ?? '' }}</td>
                                     <td class="px-3 py-2 text-gray-900">{{ $row['date_of_birth'] ?? '' }}</td>
+                                    <td class="px-3 py-2 text-gray-900 capitalize">{{ $row['verification_status'] ?? '' }}</td>
                                     <td class="px-3 py-2 text-sm text-red-600">
                                         @php $errs = $previewErrors[$i] ?? []; @endphp
                                         @if($errs)

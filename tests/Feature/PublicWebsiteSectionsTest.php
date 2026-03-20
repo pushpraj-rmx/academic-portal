@@ -56,6 +56,7 @@ test('header navigation is driven by nav items from database', function () {
     $response->assertSee('Contact', false);
     $response->assertSee('Examination', false);
     $response->assertSee('Students Corner', false);
+    $response->assertSee('Results', false);
 });
 
 test('hidden nav items are not shown in header', function () {

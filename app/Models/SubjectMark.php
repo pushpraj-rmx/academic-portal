@@ -27,6 +27,31 @@ class SubjectMark extends Model
         ];
     }
 
+    /**
+     * Check if a subject mark already exists for the given session/student/subject.
+     */
+    public static function existsFor(int $examSessionId, int $studentId, int $subjectId): bool
+    {
+        return static::query()
+            ->where('exam_session_id', $examSessionId)
+            ->where('student_id', $studentId)
+            ->where('subject_id', $subjectId)
+            ->exists();
+    }
+
+    /**
+     * @return array<int>
+     */
+    public static function subjectIdsForStudentInSession(int $examSessionId, int $studentId): array
+    {
+        return static::query()
+            ->where('exam_session_id', $examSessionId)
+            ->where('student_id', $studentId)
+            ->pluck('subject_id')
+            ->map(static fn ($id): int => (int) $id)
+            ->all();
+    }
+
     public function examSession(): BelongsTo
     {
         return $this->belongsTo(ExamSession::class);

@@ -20,7 +20,8 @@ class ExamSessionSubjectsRelationManager extends RelationManager
                     ->relationship('subject', 'name')
                     ->required()
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(fn (\App\Models\Subject $record): string => $record->code.' — '.$record->name),
                 Forms\Components\DatePicker::make('exam_date'),
                 Forms\Components\TimePicker::make('exam_time'),
             ]);
@@ -41,7 +42,9 @@ class ExamSessionSubjectsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->visible(fn () => ! $isPublished),
+                    // Allow adding subjects even if the session is already published,
+                    // as long as the user can update the exam session.
+                    ->visible(fn () => ! $isPublished || auth()->user()?->can('exam-session.update') === true),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->visible(fn () => ! $isPublished),

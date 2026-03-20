@@ -21,6 +21,9 @@ class GradingRuleResource extends Resource
 
     protected static ?string $navigationGroup = 'Examination';
 
+    // Place grading rules after exam session and marks import.
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form

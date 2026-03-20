@@ -18,6 +18,8 @@ class Student extends Model
         'course_id',
         'enrollment_id',
         'roll_number',
+        'father_name',
+        'mother_name',
         'date_of_birth',
         'phone',
         'alternate_phone',
@@ -52,7 +54,7 @@ class Student extends Model
             $next = $number + 1;
         }
 
-        return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
+        return $prefix.str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 
     public function scopePending(Builder $query): Builder

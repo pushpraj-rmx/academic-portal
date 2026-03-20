@@ -16,12 +16,6 @@
                     @error('query')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label for="dob" class="block text-sm font-medium text-gray-700">Date of birth</label>
-                    <input id="dob" name="dob" type="date" value="{{ old('dob', $dob ?? '') }}" required max="{{ date('Y-m-d') }}"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm">
-                    @error('dob')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
-                </div>
-                <div>
                     <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-md hover:bg-amber-700">
                         Verify
                     </button>
@@ -36,8 +30,10 @@
                     <dl class="grid sm:grid-cols-2 gap-4 text-sm">
                         <div><dt class="text-gray-500">Name</dt><dd class="text-gray-900 font-medium">{{ $student->user?->name }}</dd></div>
                         <div><dt class="text-gray-500">Enrollment ID</dt><dd class="text-gray-900 font-medium">{{ $student->enrollment_id }}</dd></div>
-                        <div><dt class="text-gray-500">Roll Number</dt><dd class="text-gray-900 font-medium">{{ $student->roll_number }}</dd></div>
+                        <div><dt class="text-gray-500">Roll Number</dt><dd class="text-gray-900 font-medium">{{ $student->roll_number ?: '—' }}</dd></div>
                         <div><dt class="text-gray-500">Course</dt><dd class="text-gray-900 font-medium">{{ $student->course?->name }}</dd></div>
+                        <div><dt class="text-gray-500">Father name</dt><dd class="text-gray-900 font-medium">{{ $student->father_name ?: '—' }}</dd></div>
+                        <div><dt class="text-gray-500">Mother name</dt><dd class="text-gray-900 font-medium">{{ $student->mother_name ?: '—' }}</dd></div>
                         <div><dt class="text-gray-500">Verification Status</dt><dd class="text-gray-900 font-medium capitalize">{{ $student->verification_status }}</dd></div>
                     </dl>
                 @else

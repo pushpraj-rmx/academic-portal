@@ -17,16 +17,14 @@ test('students verification page is accessible', function () {
     $response->assertSee('Students Verification', false);
 });
 
-test('students verification search finds student by enrollment id and dob', function () {
+test('students verification search finds student by enrollment id', function () {
     $student = Student::factory()->create([
         'enrollment_id' => 'ENR-TEST-001',
-        'date_of_birth' => '2000-05-15',
     ]);
     $student->load('user');
 
     $response = $this->get(route('students.verification.search', [
         'query' => 'ENR-TEST-001',
-        'dob' => '2000-05-15',
     ]));
 
     $response->assertSuccessful();
@@ -34,20 +32,52 @@ test('students verification search finds student by enrollment id and dob', func
     $response->assertSee('ENR-TEST-001', false);
 });
 
-test('students verification search does not find student when dob does not match', function () {
+test('students verification search finds student by roll number', function () {
     $student = Student::factory()->create([
-        'enrollment_id' => 'ENR-TEST-002',
-        'date_of_birth' => '2000-05-15',
+        'roll_number' => 'ROLL-UNIQUE-999',
     ]);
 
     $response = $this->get(route('students.verification.search', [
-        'query' => 'ENR-TEST-002',
-        'dob' => '1999-01-01',
+        'query' => 'ROLL-UNIQUE-999',
+    ]));
+
+    $response->assertSuccessful();
+    $response->assertSee('Student Found', false);
+    $response->assertSee('ROLL-UNIQUE-999', false);
+});
+
+test('students verification search does not find student when query does not match', function () {
+    Student::factory()->create([
+        'enrollment_id' => 'ENR-TEST-002',
+    ]);
+
+    $response = $this->get(route('students.verification.search', [
+        'query' => 'NONEXISTENT-QUERY-XYZ',
     ]));
 
     $response->assertSuccessful();
     $response->assertSee(settings('empty_student_not_found', 'No student found'), false);
     $response->assertDontSee('Student Found', false);
+});
+
+test('students verification shows father and mother names when present', function () {
+    $student = Student::factory()->create([
+        'roll_number' => 'ROLL-PARENT-001',
+        'father_name' => 'Ramesh Sharma',
+        'mother_name' => 'Sita Sharma',
+    ]);
+
+    $student->load('user', 'course');
+
+    $response = $this->get(route('students.verification.search', [
+        'query' => 'ROLL-PARENT-001',
+    ]));
+
+    $response->assertSuccessful();
+    $response->assertSee('Father name', false);
+    $response->assertSee('Ramesh Sharma', false);
+    $response->assertSee('Mother name', false);
+    $response->assertSee('Sita Sharma', false);
 });
 
 test('students application forms page shows admission forms only', function () {

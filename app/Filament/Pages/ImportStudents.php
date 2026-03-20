@@ -32,6 +32,10 @@ class ImportStudents extends Page implements HasForms
 
     protected static string $view = 'filament.pages.import-students';
 
+    // Hidden from the sidebar because we open it from StudentResource
+    // alongside the "New student" button.
+    protected static bool $shouldRegisterNavigation = false;
+
     public ?string $file = null;
 
     public ?int $default_course_id = null;
@@ -104,9 +108,8 @@ class ImportStudents extends Page implements HasForms
             return;
         }
 
-        $path = storage_path('app/'.$this->file);
-
-        if (! file_exists($path)) {
+        $path = $this->resolveUploadedFilePath();
+        if (! $path) {
             Notification::make()
                 ->title('Uploaded file not found on server.')
                 ->danger()
@@ -115,7 +118,7 @@ class ImportStudents extends Page implements HasForms
             return;
         }
 
-        $import = new StudentsArrayImport();
+        $import = new StudentsArrayImport;
 
         try {
             Excel::import($import, $path);
@@ -140,7 +143,7 @@ class ImportStudents extends Page implements HasForms
 
         $rows = $import->rows;
         $header = array_map(
-            fn ($value) => Str::of((string) $value)->lower()->replace([' ', '-', '.'], '_')->value(),
+            fn ($value) => $this->normalizeHeaderKey($value),
             Arr::wrap($rows[0] ?? [])
         );
 
@@ -192,9 +195,15 @@ class ImportStudents extends Page implements HasForms
 
         $name = trim((string) ($row['name'] ?? ''));
         $email = trim((string) ($row['email'] ?? ''));
+        $passwordRaw = trim((string) ($row['password'] ?? ''));
         $rollNumber = trim((string) ($row['roll_number'] ?? ''));
+        $enrollmentId = trim((string) ($row['enrollment_id'] ?? ''));
+        $fatherNameRaw = trim((string) ($row['father_name'] ?? ''));
+        $motherNameRaw = trim((string) ($row['mother_name'] ?? ''));
         $dobRaw = $row['dob'] ?? $row['date_of_birth'] ?? null;
-        $courseSlugOrName = trim((string) ($row['course_slug'] ?? $row['course'] ?? ''));
+        $courseSlugOrName = trim((string) ($row['course_slug'] ?? $row['course'] ?? $row['course_id'] ?? ''));
+        $verificationStatus = trim((string) ($row['verification_status'] ?? ''));
+        $notesRaw = $row['notes'] ?? null;
 
         if ($name === '') {
             $errors[] = "Line {$lineNumber}: name is required.";
@@ -212,15 +221,21 @@ class ImportStudents extends Page implements HasForms
             $errors[] = "Line {$lineNumber}: course not found (by slug/name) and no default course selected.";
         }
 
-        if ($rollNumber === '') {
-            $errors[] = "Line {$lineNumber}: roll_number is required.";
+        if ($enrollmentId !== '' && \App\Models\Student::where('enrollment_id', $enrollmentId)->exists()) {
+            $errors[] = "Line {$lineNumber}: enrollment_id '{$enrollmentId}' is already in use.";
+        }
+
+        if ($verificationStatus !== '') {
+            $allowedStatuses = ['pending', 'verified', 'rejected'];
+            if (! in_array(strtolower($verificationStatus), $allowedStatuses, true)) {
+                $errors[] = "Line {$lineNumber}: verification_status must be one of: ".implode(', ', $allowedStatuses).'.';
+            }
         }
 
         $dob = null;
         if ($dobRaw !== null && $dobRaw !== '') {
             try {
-                // Excel may give a DateTime or numeric serial; let Carbon handle strings.
-                $dob = \Carbon\Carbon::parse($dobRaw)->toDateString();
+                $dob = $this->parseDobValue($dobRaw);
             } catch (\Throwable $e) {
                 $errors[] = "Line {$lineNumber}: invalid date of birth value.";
             }
@@ -238,16 +253,84 @@ class ImportStudents extends Page implements HasForms
         $clean = [
             'name' => $name,
             'email' => $email,
-            'roll_number' => $rollNumber,
+            'password' => $passwordRaw !== '' ? $passwordRaw : 'password',
+            'enrollment_id' => $enrollmentId !== '' ? $enrollmentId : null,
+            'roll_number' => $rollNumber !== '' ? $rollNumber : null,
             'course_id' => $courseId,
             'date_of_birth' => $dob,
+            'father_name' => $fatherNameRaw !== '' ? $fatherNameRaw : null,
+            'mother_name' => $motherNameRaw !== '' ? $motherNameRaw : null,
             'phone' => trim((string) ($row['phone'] ?? '')),
             'alternate_phone' => trim((string) ($row['alternate_phone'] ?? '')),
-            'verification_status' => 'pending',
-            'notes' => null,
+            'verification_status' => $verificationStatus !== '' ? strtolower($verificationStatus) : 'pending',
+            'notes' => $notesRaw !== null ? trim((string) $notesRaw) : null,
         ];
 
         return [$clean, $errors];
+    }
+
+    /**
+     * Parse DOB coming from CSV/XLSX into a `Y-m-d` string.
+     *
+     * Maatwebsite/PhpSpreadsheet may return:
+     * - DateTimeInterface (parsed date)
+     * - numeric Excel date serials (e.g. 11232)
+     * - strings (e.g. "2003-05-14")
+     *
+     * @throws \Throwable
+     */
+    private function parseDobValue(mixed $dobRaw): string
+    {
+        if ($dobRaw instanceof \DateTimeInterface) {
+            return $dobRaw->format('Y-m-d');
+        }
+
+        if (is_numeric($dobRaw)) {
+            // Convert Excel serial date to DateTime.
+            $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $dobRaw);
+
+            return $dt->format('Y-m-d');
+        }
+
+        $dobString = trim((string) $dobRaw);
+        if ($dobString === '') {
+            throw new \InvalidArgumentException('Empty DOB');
+        }
+
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dobString) === 1) {
+            return \Carbon\Carbon::createFromFormat('Y-m-d', $dobString)->toDateString();
+        }
+
+        // Support dd/mm/yyyy or dd-mm-yyyy (admins preferred format)
+        if (preg_match('/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/', $dobString, $m) === 1) {
+            $day = (int) $m[1];
+            $month = (int) $m[2];
+            $year = (int) $m[3];
+
+            return \Carbon\Carbon::createFromDate($year, $month, $day)->toDateString();
+        }
+
+        return \Carbon\Carbon::parse($dobString)->toDateString();
+    }
+
+    /**
+     * Normalize CSV/Excel header keys so small formatting differences don't break imports.
+     *
+     * Handles:
+     * - UTF-8 BOM (e.g. "\u{FEFF}name")
+     * - leading/trailing spaces
+     * - spaces/dashes/dots -> underscores
+     */
+    private function normalizeHeaderKey(mixed $value): string
+    {
+        $key = Str::of((string) $value)
+            ->replace("\u{FEFF}", '')
+            ->trim()
+            ->lower()
+            ->replace([' ', '-', '.'], '_')
+            ->value();
+
+        return $key;
     }
 
     protected function resolveCourseId(?string $slugOrName): ?int
@@ -255,6 +338,12 @@ class ImportStudents extends Page implements HasForms
         $value = trim((string) $slugOrName);
         if ($value === '') {
             return null;
+        }
+
+        if (ctype_digit($value)) {
+            $course = Course::query()->find((int) $value);
+
+            return $course?->id;
         }
 
         $course = Course::query()
@@ -285,9 +374,8 @@ class ImportStudents extends Page implements HasForms
             return;
         }
 
-        $path = storage_path('app/'.$this->file);
-
-        if (! file_exists($path)) {
+        $path = $this->resolveUploadedFilePath();
+        if (! $path) {
             Notification::make()
                 ->title('Uploaded file not found on server.')
                 ->danger()
@@ -296,7 +384,7 @@ class ImportStudents extends Page implements HasForms
             return;
         }
 
-        $import = new StudentsArrayImport();
+        $import = new StudentsArrayImport;
 
         try {
             Excel::import($import, $path);
@@ -356,12 +444,13 @@ class ImportStudents extends Page implements HasForms
                 $payload = [
                     'name' => $clean['name'],
                     'email' => $clean['email'],
-                    // Simple default password policy for imports; admins can force reset later.
-                    'password' => 'password',
+                    'password' => $clean['password'] ?? 'password',
                     'course_id' => $clean['course_id'],
-                    'enrollment_id' => null,
+                    'enrollment_id' => $clean['enrollment_id'] ?? null,
                     'roll_number' => $clean['roll_number'],
                     'date_of_birth' => $clean['date_of_birth'],
+                    'father_name' => $clean['father_name'],
+                    'mother_name' => $clean['mother_name'],
                     'phone' => $clean['phone'],
                     'alternate_phone' => $clean['alternate_phone'],
                     'verification_status' => $clean['verification_status'],
@@ -391,6 +480,46 @@ class ImportStudents extends Page implements HasForms
             ->send();
     }
 
+    /**
+     * Resolve the actual on-disk path to the uploaded file.
+     *
+     * Filament's FileUpload can return either a relative path (disk-relative) or an absolute path
+     * depending on how it was stored/serialized during the Livewire request lifecycle.
+     */
+    protected function resolveUploadedFilePath(): ?string
+    {
+        $file = $this->file;
+
+        if (is_array($file)) {
+            $file = $file[0] ?? null;
+        }
+
+        if (! is_string($file)) {
+            return null;
+        }
+
+        $file = trim($file);
+        if ($file === '') {
+            return null;
+        }
+
+        // Absolute path case
+        if (str_starts_with($file, '/') && file_exists($file)) {
+            return $file;
+        }
+
+        // Disk-relative case (this page uses disk = local)
+        $disk = Storage::disk('local');
+        if ($disk->exists($file)) {
+            return $disk->path($file);
+        }
+
+        // Backward-compatible fallback
+        $candidate = storage_path('app/'.$file);
+
+        return file_exists($candidate) ? $candidate : null;
+    }
+
     public static function canAccess(): bool
     {
         $user = auth()->user();
@@ -402,4 +531,3 @@ class ImportStudents extends Page implements HasForms
         return $user->can('student.create');
     }
 }
-

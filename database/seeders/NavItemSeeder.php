@@ -17,11 +17,12 @@ class NavItemSeeder extends Seeder
             ['label' => 'About Us', 'route_name' => 'pages.show', 'route_params' => ['page' => 'about'], 'sort_order' => 1],
             ['label' => "Director's Message", 'route_name' => 'pages.show', 'route_params' => ['page' => 'director-message'], 'sort_order' => 2],
             ['label' => 'Courses', 'dynamic_source' => 'course_categories', 'sort_order' => 3],
-            ['label' => 'Examination', 'sort_order' => 4],
-            ['label' => 'Students Corner', 'sort_order' => 5],
-            ['label' => 'Contact', 'route_name' => 'contact.index', 'sort_order' => 6],
-            ['label' => 'Login', 'route_name' => 'login', 'show_when' => 'guest', 'sort_order' => 7],
-            ['label' => 'Admin', 'url' => '/admin', 'show_when' => 'auth_admin', 'sort_order' => 8],
+            ['label' => 'Results', 'route_name' => 'results.index', 'sort_order' => 4],
+            ['label' => 'Examination', 'sort_order' => 5],
+            ['label' => 'Students Corner', 'sort_order' => 6],
+            ['label' => 'Contact', 'route_name' => 'contact.index', 'sort_order' => 7],
+            ['label' => 'Login', 'route_name' => 'login', 'show_when' => 'guest', 'sort_order' => 8],
+            ['label' => 'Admin', 'url' => '/admin', 'show_when' => 'auth_admin', 'sort_order' => 9],
         ];
 
         foreach ($items as $data) {
@@ -37,6 +38,13 @@ class NavItemSeeder extends Seeder
                     'dynamic_source' => $data['dynamic_source'] ?? null,
                 ]
             );
+        }
+
+        foreach ($items as $data) {
+            NavItem::query()
+                ->whereNull('parent_id')
+                ->where('label', $data['label'])
+                ->update(['sort_order' => $data['sort_order']]);
         }
 
         $examination = NavItem::whereNull('parent_id')->where('label', 'Examination')->first();
@@ -59,14 +67,19 @@ class NavItemSeeder extends Seeder
             }
         }
 
+        // Results is a top-level nav item; remove legacy duplicate under Students Corner if present
+        NavItem::query()
+            ->where('label', 'Results')
+            ->whereNotNull('parent_id')
+            ->delete();
+
         $studentsCorner = NavItem::whereNull('parent_id')->where('label', 'Students Corner')->first();
         if ($studentsCorner) {
             $children = [
-                ['label' => 'Results', 'route_name' => 'results.index', 'sort_order' => 0],
-                ['label' => 'Download Application Form', 'route_name' => 'students.application-forms', 'sort_order' => 1],
-                ['label' => 'Students Verification', 'route_name' => 'students.verification', 'sort_order' => 2],
-                ['label' => 'Placement', 'route_name' => 'placements.recruiters', 'sort_order' => 3],
-                ['label' => 'Pay Fee', 'route_name' => 'students.pay-fee', 'sort_order' => 4],
+                ['label' => 'Download Application Form', 'route_name' => 'students.application-forms', 'sort_order' => 0],
+                ['label' => 'Students Verification', 'route_name' => 'students.verification', 'sort_order' => 1],
+                ['label' => 'Placement', 'route_name' => 'placements.recruiters', 'sort_order' => 2],
+                ['label' => 'Pay Fee', 'route_name' => 'students.pay-fee', 'sort_order' => 3],
             ];
             foreach ($children as $data) {
                 NavItem::firstOrCreate(

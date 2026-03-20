@@ -2,9 +2,9 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\SiteSettings;
 use App\Filament\Pages\ImportStudents;
 use App\Filament\Pages\ImportSubjectMarks;
+use App\Filament\Pages\SiteSettings;
 use App\Filament\Resources\PageResource;
 use App\Http\Middleware\RedirectToCentralLogin;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -38,6 +38,15 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->navigationGroups([
+                'Student',
+                'Academic',
+                'Examination',
+                'Data Import',
+                'Placement',
+                'Content',
+                'Settings',
+            ])
             ->navigationItems([
                 NavigationItem::make('Homepage')
                     ->url(fn (): string => PageResource::getUrl('homepage'))

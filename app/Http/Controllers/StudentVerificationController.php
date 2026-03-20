@@ -15,27 +15,23 @@ class StudentVerificationController extends Controller
         return view('public.students.verification', [
             'student' => null,
             'query' => null,
-            'dob' => null,
         ]);
     }
 
     public function search(StudentVerificationSearchRequest $request): View
     {
         $query = trim($request->validated('query'));
-        $dob = $request->validated('dob');
 
         $student = Student::query()
             ->with('user', 'course')
             ->where(function ($q) use ($query) {
                 $q->where('roll_number', $query)->orWhere('enrollment_id', $query);
             })
-            ->whereDate('date_of_birth', $dob)
             ->first();
 
         return view('public.students.verification', [
             'student' => $student,
             'query' => $query,
-            'dob' => $dob,
         ]);
     }
 

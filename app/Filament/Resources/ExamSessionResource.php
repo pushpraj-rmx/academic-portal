@@ -24,6 +24,9 @@ class ExamSessionResource extends Resource
 
     protected static ?string $navigationGroup = 'Examination';
 
+    // Ensure "Exam sessions" appears before import pages in the Examination menu.
+    protected static ?int $navigationSort = 0;
+
     public static function form(Form $form): Form
     {
         return $form

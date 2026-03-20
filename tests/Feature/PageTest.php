@@ -9,10 +9,12 @@ beforeEach(function () {
 
 test('home page renders when published home page exists', function () {
     $response = $this->get('/');
+    $page = Page::where('slug', 'home')->first();
 
     $response->assertSuccessful();
     $response->assertViewIs('public.home');
-    $response->assertSee('Home', false);
+    $expectedTitle = $page?->meta_description ?: ($page?->title.' - '.config('app.name'));
+    $response->assertSee((string) $expectedTitle, false);
 });
 
 test('published page is accessible at page slug URL', function () {

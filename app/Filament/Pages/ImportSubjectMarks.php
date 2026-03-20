@@ -25,6 +25,9 @@ class ImportSubjectMarks extends Page implements HasForms
 
     protected static ?string $navigationLabel = 'Import subject marks';
 
+    // Ensure exam sessions appear before this page in the Examination menu.
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $title = 'Import subject marks';
 
     protected static string $view = 'filament.pages.import-subject-marks';
@@ -104,7 +107,7 @@ class ImportSubjectMarks extends Page implements HasForms
         $subjectsByCode = Subject::query()
             ->whereIn('id', $sessionSubjectIds)
             ->get()
-            ->keyBy('code');
+            ->keyBy(fn (Subject $subject): string => strtoupper(trim((string) $subject->code)));
 
         foreach ($lines as $index => $rawLine) {
             $lineNumber = $index + 1;
@@ -118,13 +121,14 @@ class ImportSubjectMarks extends Page implements HasForms
 
             $columns = preg_split('/[\t,]\s*/', $line);
             if (! $columns || count($columns) < 4) {
-                $errors[] = "Line {$lineNumber}: expected 4 columns, got " . (is_array($columns) ? count($columns) : 0) . '.';
+                $errors[] = "Line {$lineNumber}: expected 4 columns, got ".(is_array($columns) ? count($columns) : 0).'.';
                 $skipped++;
 
                 continue;
             }
 
             [$enrollmentId, $subjectCode, $marksRaw, $absentRaw] = array_map('trim', array_slice($columns, 0, 4));
+            $subjectCode = strtoupper(trim((string) $subjectCode));
 
             $student = Student::where('enrollment_id', $enrollmentId)->first();
             if (! $student) {
@@ -235,4 +239,3 @@ class ImportSubjectMarks extends Page implements HasForms
         return $user->can('subject-mark.create') || $user->can('subject-mark.update');
     }
 }
-

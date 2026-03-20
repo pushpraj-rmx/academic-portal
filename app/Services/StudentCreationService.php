@@ -5,9 +5,9 @@ namespace App\Services;
 use App\Enums\UserRole;
 use App\Models\Student;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class StudentCreationService
@@ -57,15 +57,31 @@ class StudentCreationService
 
                     return $student;
                 } catch (QueryException $e) {
-                    if ($attempts === 0) {
+                    $message = $e->getMessage();
+
+                    $isEnrollmentIdCollision = Str::contains($message, 'enrollment_id') && (
+                        Str::contains($message, 'Duplicate') ||
+                        Str::contains(strtolower($message), 'unique') ||
+                        Str::contains(strtolower($message), '23000')
+                    );
+
+                    // Retry only when the unique enrollment_id was collided.
+                    if ($attempts === 0 && $isEnrollmentIdCollision) {
                         $studentData['enrollment_id'] = null;
                         $attempts++;
 
                         continue;
                     }
 
+                    // If roll_number is empty but DB is still non-nullable, this will surface here.
+                    if (Str::contains(strtolower($message), 'roll_number') && Str::contains(strtolower($message), 'null')) {
+                        throw ValidationException::withMessages([
+                            'roll_number' => 'Roll number is optional in the UI, but the database still requires it. Run the migration to make `students.roll_number` nullable.',
+                        ]);
+                    }
+
                     throw ValidationException::withMessages([
-                        'enrollment_id' => 'Could not create student. Check that enrollment ID and roll number are unique for the course.',
+                        'enrollment_id' => 'Unable to create student. Please check the provided fields and try again.',
                     ]);
                 }
             }
@@ -76,4 +92,3 @@ class StudentCreationService
         });
     }
 }
-

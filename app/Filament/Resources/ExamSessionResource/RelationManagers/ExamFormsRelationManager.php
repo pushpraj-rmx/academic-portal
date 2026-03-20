@@ -9,6 +9,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 
 class ExamFormsRelationManager extends RelationManager
 {
@@ -17,6 +18,7 @@ class ExamFormsRelationManager extends RelationManager
     public function form(Form $form): Form
     {
         $owner = $this->getOwnerRecord();
+        $sessionId = (int) $owner->id;
         $sessionSubjectCourseIds = $owner->examSessionSubjects()->with('subject:id,course_id')->get()->pluck('subject.course_id')->unique()->filter()->values()->all();
 
         return $form
@@ -24,10 +26,12 @@ class ExamFormsRelationManager extends RelationManager
                 Forms\Components\Select::make('student_id')
                     ->relationship(
                         name: 'student',
-                        titleAttribute: 'roll_number',
-                        modifyQueryUsing: fn ($query) => $query->whereIn('course_id', $sessionSubjectCourseIds)
+                        titleAttribute: 'enrollment_id',
+                        modifyQueryUsing: fn ($query) => $query
+                            ->whereIn('course_id', $sessionSubjectCourseIds)
+                            ->whereDoesntHave('examForms', fn ($q) => $q->where('exam_session_id', $sessionId))
                     )
-                    ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->user->name.' ('.$record->roll_number.')')
+                    ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->user->name.' ('.$record->enrollment_id.(filled($record->roll_number) ? ' / '.$record->roll_number : '').')')
                     ->required()
                     ->searchable(['roll_number', 'enrollment_id'])
                     ->preload()
@@ -46,6 +50,8 @@ class ExamFormsRelationManager extends RelationManager
                                 }
                             };
                         },
+                        Rule::unique('exam_forms', 'student_id')
+                            ->where(fn ($query) => $query->where('exam_session_id', $sessionId)),
                     ]),
             ]);
     }
@@ -60,7 +66,9 @@ class ExamFormsRelationManager extends RelationManager
             ->recordTitleAttribute('id')
             ->columns([
                 Tables\Columns\TextColumn::make('student.user.name')->label('Student'),
-                Tables\Columns\TextColumn::make('student.roll_number')->label('Roll No'),
+                Tables\Columns\TextColumn::make('student.roll_number')
+                    ->label('Roll No')
+                    ->formatStateUsing(fn (?string $state, \App\Models\ExamForm $record) => filled($state) ? $state : $record->student?->enrollment_id),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

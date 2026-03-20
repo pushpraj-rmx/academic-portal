@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Pages\ImportStudents;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Models\Student;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\Rule;
 
 class StudentResource extends Resource
@@ -35,12 +37,27 @@ class StudentResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255)
-                    ->unique(table: User::class, column: 'email'),
+                    ->rules([
+                        fn (callable $get) => (function () use ($get) {
+                            $rule = Rule::unique('users', 'email');
+
+                            // On edit, Livewire requests don't have route params. We can safely
+                            // ignore the current student's related user_id from form state.
+                            $userId = $get('user_id');
+                            if (filled($userId)) {
+                                $rule->ignore($userId);
+                            }
+
+                            return $rule;
+                        })(),
+                    ]),
                 Forms\Components\TextInput::make('password')
                     ->label('Initial password')
                     ->password()
+                    ->visibleOn('create')
                     ->required()
-                    ->minLength(8),
+                    ->minLength(8)
+                    ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? $state : null),
                 Forms\Components\Select::make('course_id')
                     ->relationship('course', 'name')
                     ->required()
@@ -49,14 +66,22 @@ class StudentResource extends Resource
                 Forms\Components\TextInput::make('enrollment_id')
                     ->label('Enrollment ID')
                     ->maxLength(255)
-                    ->unique(table: Student::class, column: 'enrollment_id'),
+                    ->unique(table: Student::class, column: 'enrollment_id', ignoreRecord: true),
                 Forms\Components\TextInput::make('roll_number')
-                    ->required()
+                    ->nullable()
                     ->maxLength(255)
-                    ->rules([
-                        fn (callable $get) => Rule::unique('students', 'roll_number')
-                            ->where('course_id', $get('course_id')),
-                    ]),
+                    ->unique(ignoreRecord: true, modifyRuleUsing: function ($rule, $get) {
+                        return $rule->where('course_id', $get('course_id'));
+                    })
+                    ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? $state : null),
+                Forms\Components\TextInput::make('father_name')
+                    ->label('Father name')
+                    ->nullable()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('mother_name')
+                    ->label('Mother name')
+                    ->nullable()
+                    ->maxLength(255),
                 Forms\Components\DatePicker::make('date_of_birth')
                     ->label('Date of birth')
                     ->native(false)
@@ -121,6 +146,15 @@ class StudentResource extends Resource
                         'rejected' => 'Rejected',
                     ]),
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+                Tables\Actions\Action::make('importStudents')
+                    ->label('Import students')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('secondary')
+                    ->url(ImportStudents::getUrl())
+                    ->visible(fn () => auth()->user()?->can('student.create') ?? false),
+            ])
             ->actions([
                 Tables\Actions\Action::make('verify')
                     ->label('Verify')
@@ -147,10 +181,50 @@ class StudentResource extends Resource
                     ->visible(fn (Student $record) => $record->verification_status === 'pending')
                     ->authorize('verify'),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->action(function (Student $record): void {
+                        try {
+                            $record->delete();
+                        } catch (QueryException $e) {
+                            Notification::make()
+                                ->title('Cannot delete student')
+                                ->body('This student is linked to placement/results/exam records. Remove dependent records first.')
+                                ->danger()
+                                ->send();
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->action(function ($records): void {
+                            $deleted = 0;
+                            $blocked = 0;
+
+                            foreach ($records as $record) {
+                                try {
+                                    $record->delete();
+                                    $deleted++;
+                                } catch (QueryException $e) {
+                                    $blocked++;
+                                }
+                            }
+
+                            if ($deleted > 0) {
+                                Notification::make()
+                                    ->title("Deleted {$deleted} student(s).")
+                                    ->success()
+                                    ->send();
+                            }
+
+                            if ($blocked > 0) {
+                                Notification::make()
+                                    ->title("Skipped {$blocked} student(s).")
+                                    ->body('Some students are linked to placement/results/exam records and cannot be deleted yet.')
+                                    ->warning()
+                                    ->send();
+                            }
+                        }),
                 ]),
             ]);
     }

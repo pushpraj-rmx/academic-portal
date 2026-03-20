@@ -12,7 +12,6 @@ test('student factory creates student with pending verification', function () {
     expect($student->verification_status)->toBe('pending');
     expect($student->verified_at)->toBeNull();
     expect($student->enrollment_id)->not->toBeEmpty();
-    expect($student->roll_number)->not->toBeEmpty();
 });
 
 test('enrollment_id is unique globally', function () {

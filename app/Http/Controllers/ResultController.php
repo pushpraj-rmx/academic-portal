@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExamSession;
 use App\Models\Student;
 use App\Services\ExamResultService;
 use Illuminate\Http\Request;
@@ -21,6 +22,9 @@ class ResultController extends Controller
         ]);
 
         $query = trim($request->input('query'));
+        $requestedExamSessionId = $request->filled('exam_session_id')
+            ? (int) $request->input('exam_session_id')
+            : null;
 
         $student = Student::with('user', 'course')
             ->where('roll_number', $query)
@@ -30,6 +34,9 @@ class ResultController extends Controller
         if (! $student) {
             return view('public.results.show', [
                 'student' => null,
+                'availableSessions' => [],
+                'selectedSessionId' => null,
+                'query' => $query,
                 'resultsBySession' => [],
             ]);
         }
@@ -39,12 +46,17 @@ class ResultController extends Controller
             ->whereHas('examSession', fn ($q) => $q->where('status', 'published'))
             ->pluck('exam_session_id');
 
-        $service = app(ExamResultService::class);
-        $resultsBySession = [];
+        $availableSessions = ExamSession::query()
+            ->whereIn('id', $examSessionIds)
+            ->orderByDesc('start_date')
+            ->orderByDesc('id')
+            ->get();
 
-        foreach ($examSessionIds as $sessionId) {
-            $session = \App\Models\ExamSession::find($sessionId);
-            if (! $session) {
+        $service = app(ExamResultService::class);
+        $studentResultsBySessionId = [];
+
+        foreach ($availableSessions as $session) {
+            if (! $session instanceof ExamSession) {
                 continue;
             }
 
@@ -52,15 +64,33 @@ class ResultController extends Controller
             $studentResult = collect($allResults)->firstWhere('student_id', $student->id);
 
             if ($studentResult !== null) {
-                $resultsBySession[] = [
+                $studentResultsBySessionId[$session->id] = [
                     'session' => $session,
                     'result' => $studentResult,
                 ];
             }
         }
 
+        $selectedSessionId = null;
+        if ($requestedExamSessionId !== null && isset($studentResultsBySessionId[$requestedExamSessionId])) {
+            $selectedSessionId = $requestedExamSessionId;
+        } else {
+            // Default to the latest session that actually has a computed result for this student.
+            $latestResultSession = collect($availableSessions)
+                ->first(fn (ExamSession $s): bool => isset($studentResultsBySessionId[$s->id]));
+
+            $selectedSessionId = $latestResultSession?->id ?? $availableSessions->first()?->id;
+        }
+
+        $resultsBySession = $selectedSessionId !== null && isset($studentResultsBySessionId[$selectedSessionId])
+            ? [$studentResultsBySessionId[$selectedSessionId]]
+            : [];
+
         return view('public.results.show', [
             'student' => $student,
+            'availableSessions' => $availableSessions,
+            'selectedSessionId' => $selectedSessionId,
+            'query' => $query,
             'resultsBySession' => $resultsBySession,
         ]);
     }

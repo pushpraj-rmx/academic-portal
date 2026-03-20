@@ -71,8 +71,8 @@ Route::middleware(['panel:admin'])->group(function () {
         ->name('filament.admin.pages.import-subject-marks');
     Route::get('/admin/import-students/sample', function () {
         $content = implode("\n", [
-            'name,email,course_slug,roll_number,dob,phone,alternate_phone',
-            'Rahul Sharma,rahul@example.com,bca,101,2003-05-14,9876543210,',
+            'name,email,password,course_slug,enrollment_id,roll_number,father_name,mother_name,date_of_birth,phone,alternate_phone,verification_status,notes',
+            'Rahul Sharma,rahul@example.com,password,bca,,101,Ramesh Sharma,Sita Sharma,14/05/2003,9876543210,,pending,',
         ])."\n";
 
         return response($content, 200, [
